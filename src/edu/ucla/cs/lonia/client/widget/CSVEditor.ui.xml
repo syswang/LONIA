@@ -1,0 +1,129 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:b="urn:import:com.github.gwtbootstrap.client.ui"
+	xmlns:d="urn:import:com.github.gwtbootstrap.datepicker.client.ui">
+	<ui:style>
+		.pager {
+			margin-bottom: 12px;
+		}
+	</ui:style>
+	<ui:with type="edu.ucla.cs.lonia.client.resources.CustomResources"
+		field="resource" />
+	<g:HTMLPanel>
+		<b:Heading size="2">
+			Edit Parsing Result
+		</b:Heading>
+
+		<b:FluidRow>
+			<b:Column size="12">
+				<b:Paragraph>
+					You can edit the pasring results in the table below.
+					Click
+					<b:Label type="INFO">Display Man File</b:Label>
+					button to show
+					<b:Code>UNIX Manual File</b:Code>
+					<br />
+				</b:Paragraph>
+			</b:Column>
+		</b:FluidRow>
+		<b:FluidContainer>
+			<b:FluidRow>
+				<b:Column ui:field="leftPanel" size="4">
+					<b:TabPanel>
+						<b:Tab heading="Display">
+							<b:Heading size="4">Display</b:Heading>
+							<b:Paragraph>
+								huhuhu hahha
+							</b:Paragraph>
+						</b:Tab>
+						<b:Tab ui:field="manSourceTab" heading="Source" active="true">
+							<b:Heading size="4">Source</b:Heading>
+							<b:Image resource="{resource.logo}" />
+						</b:Tab>
+					</b:TabPanel>
+				</b:Column>
+				<b:Column ui:field="mainPanel" size="8">
+					<b:ButtonToolbar>
+						<b:ButtonGroup>
+							<b:Button type="PRIMARY" ui:field="editRow">Edit</b:Button>
+							<b:Button type="DANGER" ui:field="deleteRow">Detele</b:Button>
+							<b:Button>3</b:Button>
+						</b:ButtonGroup>
+						<b:Button>4</b:Button>
+						<b:Button>5</b:Button>
+						<b:DropdownButton text="6">
+							<b:NavLink>Some NavLink</b:NavLink>
+							<b:NavLink>Another NavLink</b:NavLink>
+						</b:DropdownButton>
+						<b:SplitDropdownButton text="7">
+							<b:NavLink>Some NavLink</b:NavLink>
+							<b:NavLink>Another NavLink</b:NavLink>
+						</b:SplitDropdownButton>
+					</b:ButtonToolbar>
+
+					<b:Button type="INFO" ui:field="displayManReader">Display Man File</b:Button>
+
+					<b:Pagination ui:field="dataGridPagination" alignment="right" />
+					<b:DataGrid ui:field="csvDataGrid" bordered="true"
+						condensed="true" striped="true" height="500px" width="100%" />
+				</b:Column>
+			</b:FluidRow>
+		</b:FluidContainer>
+		<b:Form type="HORIZONTAL" action="//gwtbootstrap.github.com"
+			ui:field="submitExampleForm">
+			<b:Modal ui:field="editModal" title="Edit a row" backdrop="STATIC"
+				closeVisible="true" keyboard="true" animation="true">
+
+				<b:Fieldset>
+					<b:Legend>
+						Parameter Infomation
+						<small>* is required</small>
+					</b:Legend>
+					<b:ControlGroup ui:field="nameControlGroup">
+						<b:ControlLabel for="paraName">
+							<font color="red">*</font>
+							Parameter Name
+						</b:ControlLabel>
+						<b:Controls>
+							<b:TextBox b:id="name" ui:field="name" placeholder="input parameter name" />
+							<b:HelpInline ui:field="nameHelpInline" />
+						</b:Controls>
+					</b:ControlGroup>
+					<b:ControlGroup ui:field="descriptionControlGroup">
+						<b:ControlLabel for="description">Description</b:ControlLabel>
+						<b:Controls>
+							<b:IntegerBox b:id="description" ui:field="description"
+								placeholder="input parameter description" />
+							<b:HelpInline ui:field="descriptionHelpInline" />
+						</b:Controls>
+					</b:ControlGroup>
+					<b:ControlGroup ui:field="typeControlGroup">
+						<b:ControlLabel for="type">Select Type</b:ControlLabel>
+						<b:Controls>
+							<b:ValueListBox b:id="type" ui:field="type" />
+							<b:HelpInline>test</b:HelpInline>
+						</b:Controls>
+					</b:ControlGroup>
+					<b:ControlGroup ui:field="stateNameControlGroup">
+						<b:ControlLabel for="state">Select
+							State</b:ControlLabel>
+						<b:Controls>
+							<b:ValueListBox b:id="state" ui:field="state" />
+							<b:HelpInline>Woohoo!</b:HelpInline>
+						</b:Controls>
+					</b:ControlGroup>
+				</b:Fieldset>
+
+
+				<b:ModalFooter>
+					<b:FormActions>
+						<b:SubmitButton type="PRIMARY" ui:field="saveButton">Save
+							changes</b:SubmitButton>
+						<b:Button ui:field="cancelButton">Cancel</b:Button>
+					</b:FormActions>
+				</b:ModalFooter>
+
+			</b:Modal>
+		</b:Form>
+	</g:HTMLPanel>
+</ui:UiBinder>
