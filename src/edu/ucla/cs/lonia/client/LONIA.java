@@ -8,7 +8,6 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import edu.ucla.cs.lonia.client.widget.Buttons;
 import edu.ucla.cs.lonia.client.widget.CSVEditor;
 import edu.ucla.cs.lonia.client.widget.NaviBar;
 import edu.ucla.cs.lonia.client.widget.NaviBar.NaviBarClickListener;
