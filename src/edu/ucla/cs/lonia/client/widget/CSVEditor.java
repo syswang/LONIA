@@ -395,7 +395,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
     if (event.getCharCode() < '0' || event.getCharCode() > '9') {
       descriptionControlGroup.setType(ControlGroupType.ERROR);
-      descriptionHelpInline.setText("Age should be numeric.");
+      descriptionHelpInline.setText("input a number for test.");
 
       event.preventDefault();
     } else {
@@ -422,7 +422,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
     if (person.getDescription() == null) {
       descriptionControlGroup.setType(ControlGroupType.ERROR);
-      descriptionHelpInline.setText("Age should be numeric.");
+      descriptionHelpInline.setText("input a number for test.");
       hasError = true;
     }
 
