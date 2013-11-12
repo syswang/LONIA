@@ -9,7 +9,7 @@ Description
 LONI Man Parser is developed with [GWT-Boostrap](http://gwtbootstrap.github.io/).
 
 
-Description
+Demo
 -------
 
 Try current deployment: (http://loniparser.appspot.com/#parser)
