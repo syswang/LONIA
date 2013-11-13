@@ -8,7 +8,7 @@
 			<b:Nav>
 				<b:NavLink ui:field="overview">Overview</b:NavLink>
 				<b:NavLink ui:field="parser">Parser</b:NavLink>
-				<b:NavLink ui:field="lonipipeline" href="http://www.loni.usc.edu/Software/Pipeline">LOIN Pipeline</b:NavLink>
+				<b:NavLink ui:field="lonipipeline" href="http://www.loni.usc.edu/Software/Pipeline">LONI Pipeline</b:NavLink>
 			</b:Nav>
 			<b:NavSearch size="2" placeholder="Search" alignment="RIGHT" />
 		</b:Navbar>
