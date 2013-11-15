@@ -10,120 +10,123 @@
 	<ui:with type="edu.ucla.cs.lonia.client.resources.CustomResources"
 		field="resource" />
 	<g:HTMLPanel>
-		<b:Heading size="2">
-			Edit Parsing Result
-		</b:Heading>
-
-		<b:FluidRow>
-			<b:Column size="12">
-				<b:Paragraph>
-					You can edit the pasring results in the table below.
-					Click
-					<b:Label type="INFO">Display Man File</b:Label>
-					button to show
-					<b:Code>UNIX Manual File</b:Code>
-					<br />
-				</b:Paragraph>
-			</b:Column>
-		</b:FluidRow>
 		<b:FluidContainer>
 			<b:FluidRow>
-				<b:Column ui:field="leftPanel" size="4">
+				<b:Column size="12">
+					<b:Heading size="2">
+						Edit Parsing Result
+					</b:Heading>
+					<b:Paragraph>
+						You can edit the pasring results in the table below.
+						Click
+						<b:Label ui:field="dragTest" type="INFO">Parse</b:Label>
+						button to process
+						<b:Code>UNIX Manual File</b:Code>
+						.
+						<br />
+					</b:Paragraph>
+				</b:Column>
+			</b:FluidRow>
+			<b:FluidRow>
+				<b:Column size="12">
 					<b:TabPanel>
 						<b:Tab heading="Display">
-							<b:Heading size="4">Display</b:Heading>
-							<b:Paragraph>
-								huhuhu hahha
-							</b:Paragraph>
+							<b:Heading size="4">Display Manual File</b:Heading>
+							<!-- <b:Paragraph> huhuhu hahha </b:Paragraph> -->
+							<b:TextArea ui:field="textArea">
+								If none is selected, the Index of
+								zero and One represents the current
+								cursor position inside the
+								text
+								area.This method returns position
+								only when the corresponding
+								text
+								area is focused, if not then it
+								returns null.
+							</b:TextArea>
 						</b:Tab>
 						<b:Tab ui:field="manSourceTab" heading="Source" active="true">
 							<b:Heading size="4">Source</b:Heading>
-							<b:Image resource="{resource.logo}" />
+							<!-- <b:Image resource="{resource.logo}" /> -->
 						</b:Tab>
 					</b:TabPanel>
+				</b:Column>
+			</b:FluidRow>
+			<b:FluidRow>
+				<b:Column ui:field="leftPanel" size="4">
+					<b:Form type="HORIZONTAL" action="//gwtbootstrap.github.com"
+						ui:field="submitExampleForm">
+						<b:Fieldset>
+							<b:Legend>
+								Parameter Infomation
+								<small>* is required</small>
+							</b:Legend>
+							<b:ControlGroup ui:field="nameControlGroup">
+								<b:ControlLabel for="paraName">
+									<font color="red">*</font>
+									Parameter Name
+								</b:ControlLabel>
+								<b:Controls>
+									<b:TextBox b:id="name" ui:field="name"
+										placeholder="input parameter name" />
+									<b:HelpInline ui:field="nameHelpInline" />
+								</b:Controls>
+							</b:ControlGroup>
+							<b:ControlGroup ui:field="descriptionControlGroup">
+								<b:ControlLabel for="description">Description</b:ControlLabel>
+								<b:Controls>
+									<b:TextBox b:id="description" ui:field="description"
+										placeholder="input parameter description" />
+									<b:HelpInline ui:field="descriptionHelpInline" />
+								</b:Controls>
+							</b:ControlGroup>
+							<b:ControlGroup ui:field="typeControlGroup">
+								<b:ControlLabel for="type">Select Type</b:ControlLabel>
+								<b:Controls>
+									<b:ValueListBox b:id="type" ui:field="type" />
+									<b:HelpInline></b:HelpInline>
+								</b:Controls>
+							</b:ControlGroup>
+							<b:ControlGroup ui:field="stateNameControlGroup">
+								<b:ControlLabel for="state">Select
+									State</b:ControlLabel>
+								<b:Controls>
+									<b:ValueListBox b:id="state" ui:field="state" />
+									<b:HelpInline></b:HelpInline>
+								</b:Controls>
+							</b:ControlGroup>
+						</b:Fieldset>
+						<b:FormActions>
+							<b:SubmitButton type="PRIMARY" ui:field="saveButton">Save
+								changes</b:SubmitButton>
+							<b:Button ui:field="cancelButton">Cancel</b:Button>
+						</b:FormActions>
+					</b:Form>
 				</b:Column>
 				<b:Column ui:field="mainPanel" size="8">
 					<b:ButtonToolbar>
 						<b:ButtonGroup>
 							<b:Button type="PRIMARY" ui:field="editRow">Edit</b:Button>
 							<b:Button type="DANGER" ui:field="deleteRow">Detele</b:Button>
-							<b:Button>3</b:Button>
+							<!-- <b:Button>3</b:Button> -->
 						</b:ButtonGroup>
-						<b:Button>4</b:Button>
-						<b:Button>5</b:Button>
-						<b:DropdownButton text="6">
-							<b:NavLink>Some NavLink</b:NavLink>
-							<b:NavLink>Another NavLink</b:NavLink>
+						<b:Button type="INFO" ui:field="parse">Parse</b:Button> <!-- <b:Button>5</b:Button> -->
+						<b:DropdownButton text="Import">
+							<b:NavLink>Browse File</b:NavLink>
+							<b:NavLink>From Other Sources</b:NavLink>
 						</b:DropdownButton>
-						<b:SplitDropdownButton text="7">
-							<b:NavLink>Some NavLink</b:NavLink>
-							<b:NavLink>Another NavLink</b:NavLink>
+						<b:SplitDropdownButton text="Export">
+							<b:NavLink>To *.csv (default)</b:NavLink>
+							<b:NavLink>To *.txt</b:NavLink>
 						</b:SplitDropdownButton>
 					</b:ButtonToolbar>
-
-					<b:Button type="INFO" ui:field="displayManReader">Display Man File</b:Button>
-
+					<!-- <b:Button type="INFO" ui:field="displayManReader">Display Man File</b:Button> -->
 					<b:Pagination ui:field="dataGridPagination" alignment="right" />
 					<b:DataGrid ui:field="csvDataGrid" bordered="true"
 						condensed="true" striped="true" height="500px" width="100%" />
 				</b:Column>
 			</b:FluidRow>
 		</b:FluidContainer>
-		<b:Form type="HORIZONTAL" action="//gwtbootstrap.github.com"
-			ui:field="submitExampleForm">
-			<b:Modal ui:field="editModal" title="Edit a row" backdrop="STATIC"
-				closeVisible="true" keyboard="true" animation="true">
 
-				<b:Fieldset>
-					<b:Legend>
-						Parameter Infomation
-						<small>* is required</small>
-					</b:Legend>
-					<b:ControlGroup ui:field="nameControlGroup">
-						<b:ControlLabel for="paraName">
-							<font color="red">*</font>
-							Parameter Name
-						</b:ControlLabel>
-						<b:Controls>
-							<b:TextBox b:id="name" ui:field="name" placeholder="input parameter name" />
-							<b:HelpInline ui:field="nameHelpInline" />
-						</b:Controls>
-					</b:ControlGroup>
-					<b:ControlGroup ui:field="descriptionControlGroup">
-						<b:ControlLabel for="description">Description</b:ControlLabel>
-						<b:Controls>
-							<b:IntegerBox b:id="description" ui:field="description"
-								placeholder="input parameter description" />
-							<b:HelpInline ui:field="descriptionHelpInline" />
-						</b:Controls>
-					</b:ControlGroup>
-					<b:ControlGroup ui:field="typeControlGroup">
-						<b:ControlLabel for="type">Select Type</b:ControlLabel>
-						<b:Controls>
-							<b:ValueListBox b:id="type" ui:field="type" />
-							<b:HelpInline>test</b:HelpInline>
-						</b:Controls>
-					</b:ControlGroup>
-					<b:ControlGroup ui:field="stateNameControlGroup">
-						<b:ControlLabel for="state">Select
-							State</b:ControlLabel>
-						<b:Controls>
-							<b:ValueListBox b:id="state" ui:field="state" />
-							<b:HelpInline>Woohoo!</b:HelpInline>
-						</b:Controls>
-					</b:ControlGroup>
-				</b:Fieldset>
-
-
-				<b:ModalFooter>
-					<b:FormActions>
-						<b:SubmitButton type="PRIMARY" ui:field="saveButton">Save
-							changes</b:SubmitButton>
-						<b:Button ui:field="cancelButton">Cancel</b:Button>
-					</b:FormActions>
-				</b:ModalFooter>
-
-			</b:Modal>
-		</b:Form>
 	</g:HTMLPanel>
 </ui:UiBinder>

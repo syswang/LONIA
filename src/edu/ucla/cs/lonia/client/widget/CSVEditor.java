@@ -1,5 +1,6 @@
 package edu.ucla.cs.lonia.client.widget;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -10,25 +11,35 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Form;
 import com.github.gwtbootstrap.client.ui.Form.SubmitEvent;
 import com.github.gwtbootstrap.client.ui.HelpInline;
-import com.github.gwtbootstrap.client.ui.IntegerBox;
-import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.Pagination;
 import com.github.gwtbootstrap.client.ui.SubmitButton;
 import com.github.gwtbootstrap.client.ui.Tab;
+import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.TooltipCellDecorator;
 import com.github.gwtbootstrap.client.ui.ValueListBox;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
+import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DataTransfer;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.adapters.SimpleEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DragLeaveEvent;
+import com.google.gwt.event.dom.client.DragLeaveHandler;
+import com.google.gwt.event.dom.client.DragOverEvent;
+import com.google.gwt.event.dom.client.DragOverHandler;
+import com.google.gwt.event.dom.client.DragStartEvent;
+import com.google.gwt.event.dom.client.DragStartHandler;
+import com.google.gwt.event.dom.client.DropEvent;
+import com.google.gwt.event.dom.client.DropHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -50,6 +61,8 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 import com.google.gwt.view.client.SingleSelectionModel;
 
+import edu.ucla.cs.lonia.client.parser.FileUtils;
+import edu.ucla.cs.lonia.client.parser.ResultRow;
 import edu.ucla.cs.lonia.client.resources.CustomResources;
 import edu.ucla.cs.lonia.client.util.DisplayLabelRenderer;
 import edu.ucla.cs.lonia.client.util.Parameter;
@@ -72,7 +85,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   TextBox name;
 
   @UiField
-  IntegerBox description;
+  TextBox description;
 
   @UiField
   ControlGroup descriptionControlGroup;
@@ -110,22 +123,41 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @UiField
   Form submitExampleForm;
 
-  @UiField
-  Modal editModal;
+  // @UiField
+  // Modal editModal;
 
-  @UiField
-  Button displayManReader;
+  // @UiField
+  // Button displayManReader;
 
   @UiField
   Tab manSourceTab;
 
   @UiField
   com.github.gwtbootstrap.client.ui.Column leftPanel;
-  
+
   @UiField
   com.github.gwtbootstrap.client.ui.Column mainPanel;
-  
-  
+
+  @UiField
+  @Editor.Ignore
+  Label dragTest;
+
+  @UiField
+  @Editor.Ignore
+  Button editRow;
+
+  @UiField
+  @Editor.Ignore
+  Button deleteRow;
+
+  @UiField
+  @Editor.Ignore
+  TextArea textArea;
+
+  @UiField
+  @Editor.Ignore
+  Button parse;
+
   SimplePager dataGridPager = new SimplePager();
 
   ListDataProvider<Parameter> dataProvider = new ListDataProvider<Parameter>();
@@ -158,14 +190,135 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
     initTable(csvDataGrid, dataGridPager, dataGridPagination);
 
-    onClickAdd5Entity();
+    // onClickAdd5Entity();
 
-    displayManReader.setToggle(true);
+    // displayManReader.setToggle(true);
 
     manSourceTab.add(new HTML("<pre class=\"prettyprint linenums pre-scrollable\">"
         + CustomResources.RESOURCES.manSourceDemo().getText() + "</pre>"));
-    
-    changeLayout(displayManReader.isToggled());
+
+    // changeLayout(displayManReader.isToggled());
+
+    // editRow.addDragOverHandler(new DragOverHandler(){
+    //
+    // @Override
+    // public void onDragOver(DragOverEvent event) {
+    // // TODO Auto-generated method stub
+    // dragTest.setText("dropHere!");
+    // }
+    //
+    // });
+    //
+    // editRow.addDragEnterHandler(new DragEnterHandler(){
+    //
+    // @Override
+    // public void onDragEnter(DragEnterEvent event) {
+    // // TODO Auto-generated method stub
+    // dragTest.setText("DragEnter");
+    // }
+    //
+    // });
+    //
+    // editRow.addDragStartHandler(new DragStartHandler(){
+    //
+    // @Override
+    // public void onDragStart(DragStartEvent event) {
+    // // TODO Auto-generated method stub
+    // dragTest.setText("DragStart");
+    // }
+    //
+    // });
+    //
+    // editRow.addDragEndHandler(new DragEndHandler(){
+    //
+    // @Override
+    // public void onDragEnd(DragEndEvent event) {
+    // // TODO Auto-generated method stub
+    //
+    //
+    //
+    // dragTest.setText("end");
+    // }
+    // });
+    //
+    // editRow.addDropHandler(new DropHandler() {
+    //
+    // @Override
+    // public void onDrop(DropEvent event) {
+    // // TODO Auto-generated method stub
+    // DataTransfer dt = event.getDataTransfer();
+    // // event.
+    // dragTest.setText(dt.getData("haha"));
+    // }
+    //
+    // });
+    //
+    // deleteRow.addDragStartHandler(new DragStartHandler(){
+    //
+    // @Override
+    // public void onDragStart(DragStartEvent event) {
+    // // TODO Auto-generated method stub
+    // dragTest.setText("delete - DragStart");
+    // //dragTest.
+    // event.setData("haha", "sdfsdf");
+    // DataTransfer dt = event.getDataTransfer();
+    // dt.setData("haha", textArea.getSelectedText());
+    // //dragTest.setText(dt.getData("haha"));
+    // }
+    //
+    // });
+    textArea.setWidth("98%");
+    textArea.setHeight("200px");
+    textArea.setText(CustomResources.RESOURCES.manSourceDemo().getText());
+    textArea.addDragStartHandler(new DragStartHandler() {
+
+      @Override
+      public void onDragStart(DragStartEvent event) {
+        // TODO Auto-generated method stub
+        // dragTest.setText("delete - DragStart");
+        // dragTest.
+        // event.setData("haha", "sdfsdf");
+        DataTransfer dt = event.getDataTransfer();
+        dt.setData("haha", textArea.getSelectedText());
+        // dragTest.setText(dt.getData("haha"));
+      }
+
+    });
+
+    name.addDropHandler(new DropHandler() {
+
+      @Override
+      public void onDrop(DropEvent event) {
+        // TODO Auto-generated method stub
+        DataTransfer dt = event.getDataTransfer();
+        // event.
+        event.preventDefault();
+        name.setText(dt.getData("haha"));
+        nameHelpInline.setText("");
+      }
+
+    });
+
+    name.addDragOverHandler(new DragOverHandler() {
+
+      @Override
+      public void onDragOver(DragOverEvent event) {
+        // TODO Auto-generated method stub
+        nameHelpInline.setText("Drop Para Name Here!");
+        // nameHelpInline.sett
+      }
+
+    });
+
+    name.addDragLeaveHandler(new DragLeaveHandler() {
+
+      @Override
+      public void onDragLeave(DragLeaveEvent event) {
+        // TODO Auto-generated method stub
+        nameHelpInline.setText("");
+      }
+
+    });
   }
 
   private void initTable(AbstractCellTable<Parameter> csvTable, final SimplePager pager,
@@ -230,34 +383,66 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     //
     // exampleTable.addColumnSortHandler(firstNameColHandler);
 
-    TextColumn<Parameter> paraNameCol = new TextColumn<Parameter>() {
+    EditTextCell etc = new EditTextCell();
 
+    Column<Parameter, String> firstNameColumn = new Column<Parameter, String>(etc) {
       @Override
       public String getValue(Parameter object) {
         return object.getName();
       }
     };
-    paraNameCol.setSortable(true);
-    csvTable.addColumn(paraNameCol, TableColumName.PARAMETER_NAME);
-
+    firstNameColumn.setSortable(true);
     ListHandler<Parameter> paraNameColHandler = new ListHandler<Parameter>(dataProvider.getList());
-
-    paraNameColHandler.setComparator(paraNameCol, new Comparator<Parameter>() {
-
+    paraNameColHandler.setComparator(firstNameColumn, new Comparator<Parameter>() {
       @Override
       public int compare(Parameter o1, Parameter o2) {
         return o1.getName().compareTo(o2.getName());
       }
     });
-
+    csvTable.addColumn(firstNameColumn, TableColumName.PARAMETER_NAME);
+    firstNameColumn.setFieldUpdater(new FieldUpdater<Parameter, String>() {
+      @Override
+      public void update(int index, Parameter object, String value) {
+        // Called when the user changes the value.
+        object.setName(value);
+        CSVEditor.this.driver.edit(object);
+        dataProvider.refresh();
+        rebuildPager(dataGridPagination, dataGridPager);
+      }
+    });
+    csvTable.setColumnWidth(firstNameColumn, 25, Unit.PCT);
     csvTable.addColumnSortHandler(paraNameColHandler);
+
+    // TextColumn<Parameter> paraNameCol = new TextColumn<Parameter>() {
+    //
+    // @Override
+    // public String getValue(Parameter object) {
+    // return object.getName();
+    // }
+    // };
+    //
+    // paraNameCol.setSortable(true);
+    // csvTable.addColumn(paraNameCol, TableColumName.PARAMETER_NAME);
+    //
+    // ListHandler<Parameter> paraNameColHandler = new
+    // ListHandler<Parameter>(dataProvider.getList());
+    //
+    // paraNameColHandler.setComparator(paraNameCol, new Comparator<Parameter>() {
+    //
+    // @Override
+    // public int compare(Parameter o1, Parameter o2) {
+    // return o1.getName().compareTo(o2.getName());
+    // }
+    // });
+    //
+    // csvTable.addColumnSortHandler(paraNameColHandler);
 
     //
     TextColumn<Parameter> descriptionCol = new TextColumn<Parameter>() {
 
       @Override
       public String getValue(Parameter object) {
-        return object.getDescription() != null ? String.valueOf(object.getDescription()) : "";
+        return object.getDescription();
       }
     };
     descriptionCol.setSortable(true);
@@ -270,13 +455,6 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
       @Override
       public int compare(Parameter o1, Parameter o2) {
-        if (o2.getDescription() == null) {
-          return 1;
-        }
-
-        if (o1.getDescription() == null) {
-          return -1;
-        }
         return o1.getDescription().compareTo(o2.getDescription());
       }
     });
@@ -341,7 +519,6 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     });
 
     ButtonCell buttonCell = new ButtonCell(IconType.REMOVE, ButtonType.DANGER);
-
     final TooltipCellDecorator<String> decorator = new TooltipCellDecorator<String>(buttonCell);
     decorator.setText("delete row, if click");
 
@@ -360,7 +537,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         dataProvider.getList().remove(object);
         dataProvider.flush();
         dataProvider.refresh();
-        rebuildPager(pagination, pager);
+        // rebuildPager(pagination, pager);
         rebuildPager(dataGridPagination, dataGridPager);
 
       }
@@ -393,16 +570,16 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @UiHandler("description")
   public void onDescriptionUpdate(KeyPressEvent event) {
 
-    if (event.getCharCode() < '0' || event.getCharCode() > '9') {
-      descriptionControlGroup.setType(ControlGroupType.ERROR);
-      descriptionHelpInline.setText("input a number for test.");
-
-      event.preventDefault();
-    } else {
-      descriptionControlGroup.setType(ControlGroupType.NONE);
-      descriptionHelpInline.setText("");
-
-    }
+    // if (event.getCharCode() < '0' || event.getCharCode() > '9') {
+    // descriptionControlGroup.setType(ControlGroupType.ERROR);
+    // descriptionHelpInline.setText("input a number for test.");
+    //
+    // event.preventDefault();
+    // } else {
+    // descriptionControlGroup.setType(ControlGroupType.NONE);
+    // descriptionHelpInline.setText("");
+    //
+    // }
 
   }
 
@@ -533,7 +710,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     for (int i = 0; i < 15; i++) {
 
       Parameter p = new Parameter();
-      p.setDescription(csvDataGrid.getRowCount());
+      // p.setDescription(csvDataGrid.getRowCount());
       p.setState(State.values()[Random.nextInt(State.values().length)]);
       p.setName("paraName" + csvDataGrid.getRowCount());
       p.setType(PType.values()[Random.nextInt(PType.values().length)]);
@@ -555,13 +732,18 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @UiHandler("cancelButton")
   public void onCancelClick(ClickEvent e) {
     submitExampleForm.reset();
-    editModal.hide();
+    // editModal.hide();
 
   }
 
   @UiHandler("editRow")
   void onClickEditRow(ClickEvent event) {
-    editModal.show();
+    // editModal.show();
+  }
+
+  @UiHandler("parse")
+  void onAddClick(ClickEvent event) {
+    parse();
   }
 
   //
@@ -570,12 +752,12 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   // editModal.show();
   // }
 
-  @UiHandler("displayManReader")
-  void onClickDisplayManReader(ClickEvent event) {
-    displayManReader.setFocus(false);
-    changeLayout(!displayManReader.isToggled());
-  }
-  
+  // @UiHandler("displayManReader")
+  // void onClickDisplayManReader(ClickEvent event) {
+  // displayManReader.setFocus(false);
+  // changeLayout(!displayManReader.isToggled());
+  // }
+
   void changeLayout(boolean showLeftPanel) {
     if (showLeftPanel) {
       leftPanel.setVisible(true);
@@ -585,8 +767,28 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       mainPanel.setSize(12);
     }
   }
+
   //
   // @UiField("manSource")
   // manSource
+  void parse() {
+    StringBuffer in = new StringBuffer();
+    try {
+      ArrayList<ResultRow> result =
+          FileUtils.readToBuffer(in, CustomResources.RESOURCES.manSourceDemo().getText());
+      for (int i = 0; i < result.size(); i++) {
 
+        Parameter p = new Parameter();
+        p.setDescription(result.get(i).getDescription());
+        p.setState(State.values()[Random.nextInt(State.values().length)]);
+        p.setName(result.get(i).getName());
+        // p.setDescription(description);
+        p.setType(PType.values()[Random.nextInt(PType.values().length)]);
+        addPerson(p);
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
 }

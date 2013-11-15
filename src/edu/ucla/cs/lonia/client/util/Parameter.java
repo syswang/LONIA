@@ -4,7 +4,7 @@ public class Parameter {
 
   private Integer id;
 
-  private Integer description;
+  private String description;
 
   private String name;
 
@@ -28,11 +28,11 @@ public class Parameter {
     this.id = id;
   }
 
-  public Integer getDescription() {
+  public String getDescription() {
     return description;
   }
 
-  public void setDescription(Integer description) {
+  public void setDescription(String description) {
     this.description = description;
   }
 
@@ -56,7 +56,7 @@ public class Parameter {
 
   }
 
-  public Parameter(Integer id, String userName, Integer age, State choice, PType type) {
+  public Parameter(Integer id, String userName, String age, State choice, PType type) {
     this.id = id;
     this.name = userName;
     this.description = age;

@@ -18,7 +18,8 @@
 	<!-- Other module inherits -->
 	<inherits name="com.github.gwtbootstrap.Bootstrap" />
 	<inherits name="com.github.gwtbootstrap.datepicker.Datepicker" />
-	<set-property name="bootstrap.responsiveDesign" value="true" />
+	<!-- <set-property name="bootstrap.responsiveDesign" value="true" /> -->
+	<!-- <inherits name="com.smartgwt.SmartGwt"/> -->
 
 	<!-- Specify the app entry point class. -->
 	<entry-point class='edu.ucla.cs.lonia.client.LONIA' />
