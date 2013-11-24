@@ -6,5 +6,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/gwt-bootstrap-2.3.2.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/smartgwt.jar"/>
+	<classpathentry kind="lib" path="lib/gquery-dnd-bundle-1.0.6.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
