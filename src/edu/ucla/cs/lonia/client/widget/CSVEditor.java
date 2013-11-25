@@ -11,6 +11,7 @@ import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Form;
 import com.github.gwtbootstrap.client.ui.Form.SubmitEvent;
 import com.github.gwtbootstrap.client.ui.HelpInline;
+import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.Pagination;
 import com.github.gwtbootstrap.client.ui.SubmitButton;
@@ -123,17 +124,11 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @UiField
   Form submitExampleForm;
 
-  // @UiField
-  // Modal editModal;
-
-  // @UiField
-  // Button displayManReader;
+  @UiField
+  Modal editModal;
 
   @UiField
   Tab manSourceTab;
-
-  @UiField
-  com.github.gwtbootstrap.client.ui.Column leftPanel;
 
   @UiField
   com.github.gwtbootstrap.client.ui.Column mainPanel;
@@ -688,40 +683,22 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @UiHandler("cancelButton")
   public void onCancelClick(ClickEvent e) {
     submitExampleForm.reset();
-    // editModal.hide();
-
+    editModal.hide();
   }
 
   @UiHandler("editRow")
   void onClickEditRow(ClickEvent event) {
-    // editModal.show();
+    editModal.show();
+  }
+  
+  @UiHandler("saveButton")
+  void onClickSave(ClickEvent event) {
+    editModal.hide();
   }
 
   @UiHandler("parse")
   void onAddClick(ClickEvent event) {
     parse();
-  }
-
-  //
-  // @UiHandler("displayManReader")
-  // void onAddClick(ClickEvent event) {
-  // editModal.show();
-  // }
-
-  // @UiHandler("displayManReader")
-  // void onClickDisplayManReader(ClickEvent event) {
-  // displayManReader.setFocus(false);
-  // changeLayout(!displayManReader.isToggled());
-  // }
-
-  void changeLayout(boolean showLeftPanel) {
-    if (showLeftPanel) {
-      leftPanel.setVisible(true);
-      mainPanel.setSize(8);
-    } else {
-      leftPanel.setVisible(false);
-      mainPanel.setSize(12);
-    }
   }
 
   void parse() {
