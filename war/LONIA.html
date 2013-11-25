@@ -33,31 +33,6 @@
     <!-- be added before this line.                -->
     <!--                                           -->
     <script type="text/javascript" language="javascript" src="lonia/lonia.nocache.js"></script>
-    <script type="text/javascript">
-    function allowDrop(ev)
-    {
-    	ev.preventDefault();
-    }
-    function drop(ev, x)
-    {
-    	ev.preventDefault();
-    	var data=ev.dataTransfer.getData("haha");
-        alert(data);
-        //alert(x);
-        //x.innerHTML = data;
-        var childArray = x.children;
-        //alert(childArray[0].innerHTML);
-        //alert(childArray[1].innerHTML);
-        var a = childArray[0].innerHTML;
-        var b = childArray[1].innerHTML;
-    	window.updateDataGrid(data, parseInt(a,10), parseInt(b,10));
-    }
-    
-    function drag(ev)
-    {
-    	alert("haha");
-    }
-    </script>
   </head>
 
   <!--                                           -->

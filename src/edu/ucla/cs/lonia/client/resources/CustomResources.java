@@ -59,5 +59,4 @@ public interface CustomResources extends Resources {
 
   @Source("css/showcase.css")
   Showcase showcase();
-
 }

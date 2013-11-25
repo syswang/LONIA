@@ -23,7 +23,9 @@ import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.dom.client.DataTransfer;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
@@ -174,8 +176,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   Driver driver = GWT.create(Driver.class);
 
   public CSVEditor() {
-    
-    //attachClickHandler(this);
+
+    injectJsAndJsniBinding(this);
 
     type = new ValueListBox<PType>(new DisplayLabelRenderer<PType>());
 
@@ -282,7 +284,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         // dragTest.
         // event.setData("haha", "sdfsdf");
         DataTransfer dt = event.getDataTransfer();
-        dt.setData("haha", textArea.getSelectedText());
+        dt.setData("DraggedText", textArea.getSelectedText());
         // dragTest.setText(dt.getData("haha"));
       }
 
@@ -324,16 +326,40 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     });
   }
 
+  public native void injectJsAndJsniBinding(CSVEditor editor) /*-{
+    $wnd.updateDataGrid = function(text, a, b) {
+      //alert("saf");
+      editor.@edu.ucla.cs.lonia.client.widget.CSVEditor::updateDataGrid(Ljava/lang/String;II)(text,a,b);
+    }
+    $wnd.allowDrop = function(event) {
+        event.preventDefault();
+    }
+    $wnd.drop = function(ev, x) {
+        ev.preventDefault();
+        var data=ev.dataTransfer.getData("DraggedText");
+        //alert(data);
+        //alert(x);
+        var childArray = x.children;
+        //alert(childArray[0].innerHTML);
+        //alert(childArray[1].innerHTML);
+        var a = childArray[0].innerHTML;
+        var b = childArray[1].innerHTML;
+        //alert("before");
+        // note, must use $wnd.myfunction to call myfunction
+        $wnd.updateDataGrid(data, parseInt(a,10), parseInt(b,10));
+        //alert("after");
+    }
+    $wnd.drag = function (ev) {
+        alert("dragged!");
+    }
+  }-*/;
+
   public void updateDataGrid(String text, int a, int b) {
-    //this.dataProvider.refresh();
-    Window.alert(text + Integer.toString(a) + " " + Integer.toString(b));
+    //Window.alert(text + Integer.toString(a) + " " + Integer.toString(b));
     Parameter p = this.dataProvider.getList().get(b);
     p.setName(text);
     this.dataProvider.getList().set(b, p);
-    //this.csvDataGrid.getColumn(b).getCell().
   }
-
-  
 
   private void initTable(AbstractCellTable<Parameter> csvTable, final SimplePager pager,
       final Pagination pagination) {
@@ -549,8 +575,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       @Override
       public void update(int index, Parameter object, String value) {
         dataProvider.getList().remove(object);
-        //dataProvider.flush();
-        //dataProvider.refresh();
+        // dataProvider.flush();
+        // dataProvider.refresh();
         // rebuildPager(pagination, pager);
         rebuildPager(dataGridPagination, dataGridPager);
 
