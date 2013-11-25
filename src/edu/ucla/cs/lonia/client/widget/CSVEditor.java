@@ -23,9 +23,7 @@ import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.cell.client.FieldUpdater;
-import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.dom.client.DataTransfer;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
@@ -52,7 +50,6 @@ import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSe
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Random;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
@@ -195,83 +192,9 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
     initTable(csvDataGrid, dataGridPager, dataGridPagination);
 
-    // onClickAdd5Entity();
-
-    // displayManReader.setToggle(true);
-
     manSourceTab.add(new HTML("<pre class=\"prettyprint linenums pre-scrollable\">"
         + CustomResources.RESOURCES.manSourceDemo().getText() + "</pre>"));
 
-    // changeLayout(displayManReader.isToggled());
-
-    // editRow.addDragOverHandler(new DragOverHandler(){
-    //
-    // @Override
-    // public void onDragOver(DragOverEvent event) {
-    // // TODO Auto-generated method stub
-    // dragTest.setText("dropHere!");
-    // }
-    //
-    // });
-    //
-    // editRow.addDragEnterHandler(new DragEnterHandler(){
-    //
-    // @Override
-    // public void onDragEnter(DragEnterEvent event) {
-    // // TODO Auto-generated method stub
-    // dragTest.setText("DragEnter");
-    // }
-    //
-    // });
-    //
-    // editRow.addDragStartHandler(new DragStartHandler(){
-    //
-    // @Override
-    // public void onDragStart(DragStartEvent event) {
-    // // TODO Auto-generated method stub
-    // dragTest.setText("DragStart");
-    // }
-    //
-    // });
-    //
-    // editRow.addDragEndHandler(new DragEndHandler(){
-    //
-    // @Override
-    // public void onDragEnd(DragEndEvent event) {
-    // // TODO Auto-generated method stub
-    //
-    //
-    //
-    // dragTest.setText("end");
-    // }
-    // });
-    //
-    // editRow.addDropHandler(new DropHandler() {
-    //
-    // @Override
-    // public void onDrop(DropEvent event) {
-    // // TODO Auto-generated method stub
-    // DataTransfer dt = event.getDataTransfer();
-    // // event.
-    // dragTest.setText(dt.getData("haha"));
-    // }
-    //
-    // });
-    //
-    // deleteRow.addDragStartHandler(new DragStartHandler(){
-    //
-    // @Override
-    // public void onDragStart(DragStartEvent event) {
-    // // TODO Auto-generated method stub
-    // dragTest.setText("delete - DragStart");
-    // //dragTest.
-    // event.setData("haha", "sdfsdf");
-    // DataTransfer dt = event.getDataTransfer();
-    // dt.setData("haha", textArea.getSelectedText());
-    // //dragTest.setText(dt.getData("haha"));
-    // }
-    //
-    // });
     textArea.setWidth("98%");
     textArea.setHeight("200px");
     textArea.setText(CustomResources.RESOURCES.manSourceDemo().getText());
@@ -279,13 +202,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
       @Override
       public void onDragStart(DragStartEvent event) {
-        // TODO Auto-generated method stub
-        // dragTest.setText("delete - DragStart");
-        // dragTest.
-        // event.setData("haha", "sdfsdf");
         DataTransfer dt = event.getDataTransfer();
         dt.setData("DraggedText", textArea.getSelectedText());
-        // dragTest.setText(dt.getData("haha"));
       }
 
     });
@@ -577,9 +495,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         dataProvider.getList().remove(object);
         // dataProvider.flush();
         // dataProvider.refresh();
-        // rebuildPager(pagination, pager);
         rebuildPager(dataGridPagination, dataGridPager);
-
       }
     });
 
@@ -808,9 +724,6 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     }
   }
 
-  //
-  // @UiField("manSource")
-  // manSource
   void parse() {
     StringBuffer in = new StringBuffer();
     try {
@@ -822,7 +735,6 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         p.setDescription(result.get(i).getDescription());
         p.setState(State.values()[Random.nextInt(State.values().length)]);
         p.setName(result.get(i).getName());
-        // p.setDescription(description);
         p.setType(PType.values()[Random.nextInt(PType.values().length)]);
         addPerson(p);
       }
