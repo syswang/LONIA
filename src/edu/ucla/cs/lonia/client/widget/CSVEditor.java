@@ -22,7 +22,6 @@ import com.github.gwtbootstrap.client.ui.ValueListBox;
 import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
-import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DataTransfer;
@@ -61,6 +60,7 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 import com.google.gwt.view.client.SingleSelectionModel;
 
+import edu.ucla.cs.lonia.client.model.DroppableEditTextCell;
 import edu.ucla.cs.lonia.client.parser.FileUtils;
 import edu.ucla.cs.lonia.client.parser.ResultRow;
 import edu.ucla.cs.lonia.client.resources.CustomResources;
@@ -383,7 +383,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     //
     // exampleTable.addColumnSortHandler(firstNameColHandler);
 
-    EditTextCell etc = new EditTextCell();
+    DroppableEditTextCell etc = new DroppableEditTextCell();
 
     Column<Parameter, String> firstNameColumn = new Column<Parameter, String>(etc) {
       @Override

@@ -1,65 +1,104 @@
 package edu.ucla.cs.lonia.client.model;
 
-import com.google.gwt.cell.client.EditTextCell;
-import com.google.gwt.event.dom.client.DragEndHandler;
-import com.google.gwt.event.dom.client.DragEnterHandler;
-import com.google.gwt.event.dom.client.DragHandler;
-import com.google.gwt.event.dom.client.DragLeaveHandler;
-import com.google.gwt.event.dom.client.DragOverHandler;
-import com.google.gwt.event.dom.client.DragStartHandler;
-import com.google.gwt.event.dom.client.DropHandler;
-import com.google.gwt.event.dom.client.HasAllDragAndDropHandlers;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.cell.client.AbstractCell;
+import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.DragStartEvent;
+import com.google.gwt.safecss.shared.SafeStyles;
+import com.google.gwt.safecss.shared.SafeStylesUtils;
+import com.google.gwt.safehtml.client.SafeHtmlTemplates;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 
-public class DragAndDropEditTextCell extends EditTextCell implements HasAllDragAndDropHandlers{
+public class DragAndDropEditTextCell extends AbstractCell<String> {
 
-  @Override
-  public HandlerRegistration addDragEndHandler(DragEndHandler handler) {
-    // TODO Auto-generated method stub
-    return null;
+  /**
+   * The HTML templates used to render the cell.
+   */
+  interface Templates extends SafeHtmlTemplates {
+    /**
+     * The template for this Cell, which includes styles and a value.
+     * 
+     * @param styles the styles to include in the style attribute of the div
+     * @param value the safe value. Since the value type is {@link SafeHtml}, it will not be escaped
+     *          before including it in the template. Alternatively, you could make the value type
+     *          String, in which case the value would be escaped.
+     * @return a {@link SafeHtml} instance
+     */
+    @SafeHtmlTemplates.Template("<div style=\"{0}\" draggable=\"true\" ondragover=\"allowDrop(event)\" ondragstart=\"drag(event)\" ondrop=\"drop(event)\">{1}</div>")
+    SafeHtml cell(SafeStyles styles, SafeHtml value);
+  }
+
+  /**
+   * Create a singleton instance of the templates used to render the cell.
+   */
+  private static Templates templates = GWT.create(Templates.class);
+
+  public DragAndDropEditTextCell() {
+    /*
+     * Sink the click and keydown events. We handle click events in this class. AbstractCell will
+     * handle the keydown event and call onEnterKeyDown() if the user presses the enter key while
+     * the cell is selected.
+     */
+    super("click", "keydown");
   }
 
   @Override
-  public void fireEvent(GwtEvent<?> event) {
-    // TODO Auto-generated method stub
-    
+  public void onBrowserEvent(Context context, Element parent, String value, NativeEvent event,
+      ValueUpdater<String> valueUpdater) {
+    // Let AbstractCell handle the keydown event.
+    super.onBrowserEvent(context, parent, value, event, valueUpdater);
+
+    // Handle the click event.
+    if ("click".equals(event.getType())) {
+      // Ignore clicks that occur outside of the outermost element.
+      EventTarget eventTarget = event.getEventTarget();
+      if (parent.getFirstChildElement().isOrHasChild(Element.as(eventTarget))) {
+        doAction(value, valueUpdater);
+      }
+    }
+  }
+
+  private void doAction(String value, ValueUpdater<String> valueUpdater) {
+    // Alert the user that they selected a value.
+    Window.alert("You selected the color " + value);
+
+    // Trigger a value updater. In this case, the value doesn't actually
+    // change, but we use a ValueUpdater to let the app know that a value
+    // was clicked.
+    valueUpdater.update(value);
   }
 
   @Override
-  public HandlerRegistration addDragEnterHandler(DragEnterHandler handler) {
-    // TODO Auto-generated method stub
-    return null;
+  public void render(com.google.gwt.cell.client.Cell.Context context, String value,
+      SafeHtmlBuilder sb) {
+    /*
+     * Always do a null check on the value. Cell widgets can pass null to cells if the underlying
+     * data contains a null, or if the data arrives out of order.
+     */
+    if (value == null) {
+      return;
+    }
+
+    // If the value comes from the user, we escape it to avoid XSS attacks.
+    SafeHtml safeValue = SafeHtmlUtils.fromString(value);
+
+    // Use the template to create the Cell's html.
+    SafeStyles styles = SafeStylesUtils.forTrustedColor("blue");
+    SafeHtml rendered = templates.cell(styles, safeValue);
+    sb.append(rendered);
+
+    // this.render(context, value, sb);
   }
 
-  @Override
-  public HandlerRegistration addDragLeaveHandler(DragLeaveHandler handler) {
-    // TODO Auto-generated method stub
-    return null;
+  @UiHandler("root")
+  void onDragStart(DragStartEvent event, Element parent, Context context) {
+    Window.alert("dragged!");
   }
-
-  @Override
-  public HandlerRegistration addDragHandler(DragHandler handler) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public HandlerRegistration addDragOverHandler(DragOverHandler handler) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public HandlerRegistration addDragStartHandler(DragStartHandler handler) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public HandlerRegistration addDropHandler(DropHandler handler) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
 }

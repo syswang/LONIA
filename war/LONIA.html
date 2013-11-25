@@ -33,6 +33,23 @@
     <!-- be added before this line.                -->
     <!--                                           -->
     <script type="text/javascript" language="javascript" src="lonia/lonia.nocache.js"></script>
+    <script type="text/javascript">
+    function allowDrop(ev)
+    {
+    	ev.preventDefault();
+    }
+    function drop(ev)
+    {
+    	ev.preventDefault();
+    	var data=ev.dataTransfer.getData("haha");
+        alert(data);
+    }
+    
+    function drag(ev)
+    {
+    	alert("haha");
+    }
+    </script>
   </head>
 
   <!--                                           -->
