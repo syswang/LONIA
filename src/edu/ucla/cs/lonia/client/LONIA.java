@@ -40,9 +40,16 @@ public class LONIA implements EntryPoint, NaviBarClickListener, ValueChangeHandl
   public void onModuleLoad() {
     initHistorySupport();
     initAllWidgets();
-
-    //RootPanel.get().add(new CSVEditor());
+    attachClickHandler(getCSVEditor());
+    // RootPanel.get().add(new CSVEditor());
   }
+
+  public native void attachClickHandler(CSVEditor editor) /*-{
+		$wnd.updateDataGrid = function(text, a, b) {
+		  alert("saf");
+			editor.@edu.ucla.cs.lonia.client.widget.CSVEditor::updateDataGrid(Ljava/lang/String;II)(text,a,b);
+		}
+  }-*/;
 
   private CSVEditor getCSVEditor() {
     if (csvEditor == null) {
@@ -90,13 +97,13 @@ public class LONIA implements EntryPoint, NaviBarClickListener, ValueChangeHandl
 
   private void loadParser() {
     RootPanel.get().add(getCSVEditor());
-    //RootPanel.get().add(new Buttons());
+    // RootPanel.get().add(new Buttons());
   }
-  
+
   private void loadHome() {
     RootPanel.get().remove(getCSVEditor());
   }
-  
+
   private void loadOverview() {
     RootPanel.get().remove(getCSVEditor());
   }

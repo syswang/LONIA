@@ -40,11 +40,11 @@ public class DroppableEditTextCell extends
     AbstractEditableCell<String, DroppableEditTextCell.ViewData> {
 
   interface Template extends SafeHtmlTemplates {
-    @Template("<input type=\"text\" value=\"{0}\" tabindex=\"-1\" ondragover=\"allowDrop(event)\" ondrop=\"drop(event)\"></input>")
+    @Template("<input type=\"text\" value=\"{0}\" tabindex=\"-1\" ondragover=\"allowDrop(event)\" ondrop=\"drop(event,1,2)\"></input>")
     SafeHtml input(String value);
 
-    @Template("<div draggable=\"true\" ondragover=\"allowDrop(event)\" ondrop=\"drop(event)\">{0}</div>")
-    SafeHtml display(String value);
+    @Template("<div ondragover=\"allowDrop(event)\" ondrop=\"drop(event, this)\">{2}<span hidden=\"true\">{0}</span><span hidden=\"true\">{1}</span></div>")
+    SafeHtml display(String a, String b, String value);
   }
 
   /**
@@ -221,7 +221,7 @@ public class DroppableEditTextCell extends
     }
 
     if (toRender != null && toRender.trim().length() > 0) {
-      sb.append(template.display(toRender));
+      sb.append(template.display("1", Integer.toString(context.getIndex()), toRender));
     } else {
       /*
        * Render a blank space to force the rendered element to have a height. Otherwise it is not

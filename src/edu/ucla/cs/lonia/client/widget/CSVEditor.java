@@ -50,6 +50,7 @@ import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSe
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Random;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
@@ -173,6 +174,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   Driver driver = GWT.create(Driver.class);
 
   public CSVEditor() {
+    
+    //attachClickHandler(this);
 
     type = new ValueListBox<PType>(new DisplayLabelRenderer<PType>());
 
@@ -320,6 +323,17 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
     });
   }
+
+  public void updateDataGrid(String text, int a, int b) {
+    //this.dataProvider.refresh();
+    Window.alert(text + Integer.toString(a) + " " + Integer.toString(b));
+    Parameter p = this.dataProvider.getList().get(b);
+    p.setName(text);
+    this.dataProvider.getList().set(b, p);
+    //this.csvDataGrid.getColumn(b).getCell().
+  }
+
+  
 
   private void initTable(AbstractCellTable<Parameter> csvTable, final SimplePager pager,
       final Pagination pagination) {
@@ -535,8 +549,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       @Override
       public void update(int index, Parameter object, String value) {
         dataProvider.getList().remove(object);
-        dataProvider.flush();
-        dataProvider.refresh();
+        //dataProvider.flush();
+        //dataProvider.refresh();
         // rebuildPager(pagination, pager);
         rebuildPager(dataGridPagination, dataGridPager);
 
