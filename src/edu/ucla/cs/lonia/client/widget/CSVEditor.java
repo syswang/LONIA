@@ -26,6 +26,9 @@ import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DataTransfer;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
@@ -50,10 +53,12 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.RangeChangeEvent;
@@ -197,10 +202,22 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
       @Override
       public void onDragStart(DragStartEvent event) {
+//        event.preventDefault();
+//        textArea.getElement().getStyle().setCursor(Cursor.MOVE);
         DataTransfer dt = event.getDataTransfer();
         dt.setData("DraggedText", textArea.getSelectedText());
+        showMoveCursor();
       }
 
+    });
+    
+    textArea.addDragOverHandler(new DragOverHandler() {
+
+      @Override
+      public void onDragOver(DragOverEvent event) {
+        showDefaultCursor();
+      }
+      
     });
 
     name.addDropHandler(new DropHandler() {
@@ -239,36 +256,51 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     });
   }
 
+  public void showMoveCursor() {
+//    textArea.getElement().getStyle().setCursor(Cursor.MOVE);
+//    DOM.setStyleAttribute(RootPanel.getBodyElement(), "cursor", "move");
+//    Element div = Document.get().createDivElement();
+//    div.setId("dragHelper");
+//    div.getStyle().setCursor(Cursor.CROSSHAIR);
+//    div.getStyle().setTop(value, unit);
+  }
+
+  public void showDefaultCursor() {
+//    textArea.getElement().getStyle().setCursor(Cursor.AUTO);
+//    DOM.setStyleAttribute(RootPanel.getBodyElement(), "cursor", "auto");
+  }
+
   public native void injectJsAndJsniBinding(CSVEditor editor) /*-{
-    $wnd.updateDataGrid = function(text, a, b) {
-      //alert("saf");
-      editor.@edu.ucla.cs.lonia.client.widget.CSVEditor::updateDataGrid(Ljava/lang/String;II)(text,a,b);
-    }
-    $wnd.allowDrop = function(event) {
-        event.preventDefault();
-    }
-    $wnd.drop = function(ev, x) {
-        ev.preventDefault();
-        var data=ev.dataTransfer.getData("DraggedText");
-        //alert(data);
-        //alert(x);
-        var childArray = x.children;
-        //alert(childArray[0].innerHTML);
-        //alert(childArray[1].innerHTML);
-        var a = childArray[0].innerHTML;
-        var b = childArray[1].innerHTML;
-        //alert("before");
-        // note, must use $wnd.myfunction to call myfunction
-        $wnd.updateDataGrid(data, parseInt(a,10), parseInt(b,10));
-        //alert("after");
-    }
-    $wnd.drag = function (ev) {
-        alert("dragged!");
-    }
+		$wnd.updateDataGrid = function(text, a, b) {
+			//alert("saf");
+			editor.@edu.ucla.cs.lonia.client.widget.CSVEditor::updateDataGrid(Ljava/lang/String;II)(text,a,b);
+		}
+		$wnd.allowDrop = function(event) {
+			event.preventDefault();
+		}
+		$wnd.drop = function(ev, x) {
+			ev.preventDefault();
+			var data = ev.dataTransfer.getData("DraggedText");
+			//alert(data);
+			//alert(x);
+			var childArray = x.children;
+			//alert(childArray[0].innerHTML);
+			//alert(childArray[1].innerHTML);
+			var a = childArray[0].innerHTML;
+			var b = childArray[1].innerHTML;
+			//alert("before");
+			// note, must use $wnd.myfunction to call myfunction
+			$wnd.updateDataGrid(data, parseInt(a, 10), parseInt(b, 10));
+			this.@edu.ucla.cs.lonia.client.widget.CSVEditor::showDefaultCursor()();
+			//alert("after");
+		}
+		$wnd.drag = function(ev) {
+			alert("dragged!");
+		}
   }-*/;
 
   public void updateDataGrid(String text, int a, int b) {
-    //Window.alert(text + Integer.toString(a) + " " + Integer.toString(b));
+    // Window.alert(text + Integer.toString(a) + " " + Integer.toString(b));
     Parameter p = this.dataProvider.getList().get(b);
     p.setName(text);
     this.dataProvider.getList().set(b, p);
@@ -391,28 +423,34 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     // csvTable.addColumnSortHandler(paraNameColHandler);
 
     //
-    TextColumn<Parameter> descriptionCol = new TextColumn<Parameter>() {
-
+    Column<Parameter, String> descriptionCol = new Column<Parameter, String>(new DroppableEditTextCell()) {
       @Override
       public String getValue(Parameter object) {
         return object.getDescription();
       }
     };
     descriptionCol.setSortable(true);
-    csvTable.addColumn(descriptionCol, TableColumName.DESCRIPTION);
-
-    ListHandler<Parameter> descriptionColHandler =
-        new ListHandler<Parameter>(dataProvider.getList());
-
+    ListHandler<Parameter> descriptionColHandler = new ListHandler<Parameter>(dataProvider.getList());
     descriptionColHandler.setComparator(descriptionCol, new Comparator<Parameter>() {
-
       @Override
       public int compare(Parameter o1, Parameter o2) {
         return o1.getDescription().compareTo(o2.getDescription());
       }
     });
-
+    csvTable.addColumn(descriptionCol, TableColumName.DESCRIPTION);
+    descriptionCol.setFieldUpdater(new FieldUpdater<Parameter, String>() {
+      @Override
+      public void update(int index, Parameter object, String value) {
+        // Called when the user changes the value.
+        object.setDescription(value);
+        CSVEditor.this.driver.edit(object);
+        dataProvider.refresh();
+        rebuildPager(dataGridPagination, dataGridPager);
+      }
+    });
+    csvTable.setColumnWidth(descriptionCol, 25, Unit.PCT);
     csvTable.addColumnSortHandler(descriptionColHandler);
+
 
     //
     TextColumn<Parameter> typeCol = new TextColumn<Parameter>() {
@@ -690,7 +728,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   void onClickEditRow(ClickEvent event) {
     editModal.show();
   }
-  
+
   @UiHandler("saveButton")
   void onClickSave(ClickEvent event) {
     editModal.hide();
