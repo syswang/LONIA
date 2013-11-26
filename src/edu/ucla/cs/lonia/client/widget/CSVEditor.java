@@ -269,7 +269,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   public native void injectJsAndJsniBinding(CSVEditor editor) /*-{
 		$wnd.updateDataGrid = function(text, a, b) {
 			//alert("saf");
-			editor.@edu.ucla.cs.lonia.client.widget.CSVEditor::updateDataGrid(Ljava/lang/String;II)(text,a,b);
+			editor.@edu.ucla.cs.lonia.client.widget.CSVEditor::updateDataGrid(Ljava/lang/String;Ljava/lang/String;I)(text,a,b);
 		}
 		$wnd.allowDrop = function(event) {
 			event.preventDefault();
@@ -286,7 +286,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 			var b = childArray[1].innerHTML;
 			//alert("before");
 			// note, must use $wnd.myfunction to call myfunction
-			$wnd.updateDataGrid(data, parseInt(a, 10), parseInt(b, 10));
+			$wnd.updateDataGrid(data, a, parseInt(b, 10));
 			this.@edu.ucla.cs.lonia.client.widget.CSVEditor::showDefaultCursor()();
 			//alert("after");
 		}
@@ -295,10 +295,19 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 		}
   }-*/;
 
-  public void updateDataGrid(String text, int a, int b) {
+  public void updateDataGrid(String text, String a, int b) {
     // Window.alert(text + Integer.toString(a) + " " + Integer.toString(b));
+    assert (b >= 0 && b < this.dataProvider.getList().size());
     Parameter p = this.dataProvider.getList().get(b);
-    p.setName(text);
+    if (text != null && a != null) {
+      if (a.equals(TableColumName.PARAMETER_NAME)) {
+        p.setName(text);
+      } else if (a.equals(TableColumName.DESCRIPTION)) {
+        p.setDescription(text);
+      } else if (a.equals(TableColumName.PREFIX)) {
+        p.setPrefix(text);
+      }
+    }
     this.dataProvider.getList().set(b, p);
   }
 

@@ -224,7 +224,7 @@ public class DroppableEditTextCell extends
     }
 
     if (toRender != null && toRender.trim().length() > 0) {
-      sb.append(template.display("1", Integer.toString(context.getIndex()), toRender));
+      sb.append(template.display(columnName, Integer.toString(context.getIndex()), toRender));
     } else {
       /*
        * Render a blank space to force the rendered element to have a height. Otherwise it is not
