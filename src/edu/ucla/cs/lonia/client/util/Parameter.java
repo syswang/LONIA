@@ -9,6 +9,36 @@ public class Parameter {
   private String name;
 
   private PType type;
+  
+  private Boolean isRequired;
+  
+  public Boolean getIsRequired() {
+    return isRequired;
+  }
+
+  public void setIsRequired(Boolean isRequired) {
+    this.isRequired = isRequired;
+  }
+
+  public String getPrefix() {
+    return prefix;
+  }
+
+  public void setPrefix(String prefix) {
+    this.prefix = prefix;
+  }
+
+  public Integer getCardinality() {
+    return cardinality;
+  }
+
+  public void setCardinality(Integer cardinality) {
+    this.cardinality = cardinality;
+  }
+
+  private String prefix;
+  
+  private Integer cardinality;
 
   public PType getType() {
     return type;

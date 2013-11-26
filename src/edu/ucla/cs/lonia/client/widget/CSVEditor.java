@@ -20,6 +20,7 @@ import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.ValueListBox;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
+import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DataTransfer;
@@ -47,6 +48,7 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.Random;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
@@ -74,6 +76,9 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     static final String DESCRIPTION = "Description";
     static final String TYPE = "Type";
     static final String STATE = "State";
+    static final String PREFIX = "Prefix";
+    static final String CARDINALITY = "Cardinality";
+    static final String REQUIRED = "Required";
   };
 
   SimpleEditor<Integer> id = SimpleEditor.of();
@@ -369,7 +374,6 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         return o1.getName().compareTo(o2.getName());
       }
     });
-    csvTable.addColumn(firstNameColumn, TableColumName.PARAMETER_NAME);
     firstNameColumn.setFieldUpdater(new FieldUpdater<Parameter, String>() {
       @Override
       public void update(int index, Parameter object, String value) {
@@ -380,7 +384,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         rebuildPager(dataGridPagination, dataGridPager);
       }
     });
-    csvTable.setColumnWidth(firstNameColumn, 20, Unit.PCT);
+    csvTable.addColumn(firstNameColumn, TableColumName.PARAMETER_NAME);
+    csvTable.setColumnWidth(firstNameColumn, 10, Unit.PCT);
     csvTable.addColumnSortHandler(paraNameColHandler);
 
     // TextColumn<Parameter> paraNameCol = new TextColumn<Parameter>() {
@@ -424,7 +429,6 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         return o1.getDescription().compareTo(o2.getDescription());
       }
     });
-    csvTable.addColumn(descriptionCol, TableColumName.DESCRIPTION);
     descriptionCol.setFieldUpdater(new FieldUpdater<Parameter, String>() {
       @Override
       public void update(int index, Parameter object, String value) {
@@ -435,6 +439,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         rebuildPager(dataGridPagination, dataGridPager);
       }
     });
+    csvTable.addColumn(descriptionCol, TableColumName.DESCRIPTION);
     csvTable.setColumnWidth(descriptionCol, 20, Unit.PCT);
     csvTable.addColumnSortHandler(descriptionColHandler);
 
@@ -543,6 +548,87 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     // });
     //
     // csvTable.addColumn(buttonCol);
+
+    // Prefix
+    DroppableEditTextCell prefixCell = new DroppableEditTextCell(TableColumName.PREFIX);
+
+    Column<Parameter, String> prefixColumn = new Column<Parameter, String>(prefixCell) {
+      @Override
+      public String getValue(Parameter object) {
+        return object.getPrefix();
+      }
+    };
+    prefixColumn.setSortable(true);
+    ListHandler<Parameter> prefixColHandler = new ListHandler<Parameter>(dataProvider.getList());
+    prefixColHandler.setComparator(prefixColumn, new Comparator<Parameter>() {
+      @Override
+      public int compare(Parameter o1, Parameter o2) {
+        return o1.getPrefix().compareTo(o2.getPrefix());
+      }
+    });
+    prefixColumn.setFieldUpdater(new FieldUpdater<Parameter, String>() {
+      @Override
+      public void update(int index, Parameter object, String value) {
+        // Called when the user changes the value.
+        object.setPrefix(value);
+        CSVEditor.this.driver.edit(object);
+        dataProvider.refresh();
+        rebuildPager(dataGridPagination, dataGridPager);
+      }
+    });
+    csvTable.addColumn(prefixColumn, TableColumName.PREFIX);
+    csvTable.setColumnWidth(prefixColumn, 10, Unit.PCT);
+    csvTable.addColumnSortHandler(prefixColHandler);
+
+    DroppableEditTextCell cardinCell = new DroppableEditTextCell(TableColumName.CARDINALITY);
+
+    Column<Parameter, String> cardinColumn = new Column<Parameter, String>(cardinCell) {
+      @Override
+      public String getValue(Parameter object) {
+        return object.getCardinality().toString();
+      }
+    };
+    cardinColumn.setSortable(true);
+    ListHandler<Parameter> cardinColHandler = new ListHandler<Parameter>(dataProvider.getList());
+    cardinColHandler.setComparator(cardinColumn, new Comparator<Parameter>() {
+      @Override
+      public int compare(Parameter o1, Parameter o2) {
+        return o1.getCardinality().compareTo(o2.getCardinality());
+      }
+    });
+    cardinColumn.setFieldUpdater(new FieldUpdater<Parameter, String>() {
+      @Override
+      public void update(int index, Parameter object, String value) {
+        // Called when the user changes the value.
+        Integer tmp = 0;
+        try {
+          tmp = Integer.valueOf(value);
+        } catch (Exception e) {
+          e.printStackTrace();
+          Window.alert("Please input a number");
+        }
+        object.setCardinality(tmp);
+        CSVEditor.this.driver.edit(object);
+        dataProvider.refresh();
+        rebuildPager(dataGridPagination, dataGridPager);
+      }
+    });
+    csvTable.addColumn(cardinColumn, TableColumName.CARDINALITY);
+    csvTable.setColumnWidth(cardinColumn, 10, Unit.PCT);
+    csvTable.addColumnSortHandler(cardinColHandler);
+
+    // Require
+    Column<Parameter, Boolean> checkColumn =
+        new Column<Parameter, Boolean>(new CheckboxCell(true, false)) {
+          @Override
+          public Boolean getValue(Parameter object) {
+            // Get the value from the selection model.
+            return object.getIsRequired();
+          }
+        };
+    csvTable.addColumn(checkColumn, TableColumName.REQUIRED);
+    csvTable.setColumnWidth(checkColumn, 10, Unit.PCT);
+    // csvTable.setSelectionEnabled(true);
 
     final SingleSelectionModel<Parameter> selectionModel = new SingleSelectionModel<Parameter>();
 
@@ -755,19 +841,22 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       ArrayList<ResultRow> result =
           ManuFileParser.readToBuffer(in, CustomResources.RESOURCES.manFileText().getText());
       for (int i = 0; i < result.size(); i++) {
-
+        ResultRow row = result.get(i);
         Parameter p = new Parameter();
-        p.setDescription(result.get(i).getDescription());
-        State state = result.get(i).getState() ? State.ENABLED : State.DISABLED;
+        p.setDescription(row.getDescription());
+        State state = row.getState() ? State.ENABLED : State.DISABLED;
         p.setState(state);
-        p.setName(result.get(i).getName());
+        p.setName(row.getName());
         PType type = PType.NONE;
         try {
-          type = PType.valueOf(result.get(i).getType().toUpperCase());
+          type = PType.valueOf(row.getType().toUpperCase());
         } catch (Exception e) {
           e.printStackTrace();
         }
         p.setType(type);
+        p.setCardinality(row.getCardinality());
+        p.setPrefix(row.getPrefix());
+        p.setIsRequired(row.getRequire());
         addPerson(p);
       }
     } catch (Exception e) {
