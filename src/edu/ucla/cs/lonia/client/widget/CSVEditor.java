@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.github.gwtbootstrap.client.ui.Button;
-import com.github.gwtbootstrap.client.ui.ButtonCell;
 import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.Form;
@@ -19,11 +18,8 @@ import com.github.gwtbootstrap.client.ui.SubmitButton;
 import com.github.gwtbootstrap.client.ui.Tab;
 import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.TextBox;
-import com.github.gwtbootstrap.client.ui.TooltipCellDecorator;
 import com.github.gwtbootstrap.client.ui.ValueListBox;
-import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
-import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DataTransfer;
@@ -50,14 +46,12 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
-import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
-import com.google.gwt.view.client.RangeChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 import com.google.gwt.view.client.SingleSelectionModel;
@@ -358,6 +352,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     //
     // exampleTable.addColumnSortHandler(firstNameColHandler);
 
+    // Name
     DroppableEditTextCell etc = new DroppableEditTextCell(TableColumName.PARAMETER_NAME);
 
     Column<Parameter, String> firstNameColumn = new Column<Parameter, String>(etc) {
@@ -412,7 +407,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     //
     // csvTable.addColumnSortHandler(paraNameColHandler);
 
-    //
+    // Description
     Column<Parameter, String> descriptionCol =
         new Column<Parameter, String>(new DroppableEditTextCell(TableColumName.DESCRIPTION)) {
           @Override
@@ -476,66 +471,78 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       }
     });
     csvTable.addColumn(ptypeColumn, TableColumName.TYPE);
-    // csvTable.setColumnWidth(ptypeColumn, 40, Unit.PX);
+    csvTable.setColumnWidth(ptypeColumn, 10, Unit.PCT);
     csvTable.addColumnSortHandler(ptypeColumnHandler);
 
     // State
-    TextColumn<Parameter> stateCol = new TextColumn<Parameter>() {
-
+    final List<State> states = Arrays.asList(State.values());
+    List<String> stateNames = new ArrayList<String>();
+    for (State state : states) {
+      stateNames.add(state.getDisplayLabel());
+    }
+    CustomSelectionCell stateCell = new CustomSelectionCell(stateNames);
+    Column<Parameter, String> stateColumn = new Column<Parameter, String>(stateCell) {
       @Override
       public String getValue(Parameter object) {
-        return object.getState().getDisplayLabel();
+        return object.getType().getDisplayLabel();
       }
     };
-
-    stateCol.setSortable(true);
-    csvTable.addColumn(stateCol, TableColumName.STATE);
-
-    ListHandler<Parameter> stateColHandler = new ListHandler<Parameter>(dataProvider.getList());
-
-    stateColHandler.setComparator(stateCol, new Comparator<Parameter>() {
-
-      @Override
-      public int compare(Parameter o1, Parameter o2) {
-        return o1.getState().compareTo(o2.getState());
-      }
-    });
-
-    csvTable.addColumnSortHandler(stateColHandler);
-
-    //
-    csvTable.addRangeChangeHandler(new RangeChangeEvent.Handler() {
-
-      @Override
-      public void onRangeChange(RangeChangeEvent event) {
-        rebuildPager(pagination, pager);
-      }
-    });
-
-    ButtonCell buttonCell = new ButtonCell(IconType.REMOVE, ButtonType.DANGER);
-    final TooltipCellDecorator<String> decorator = new TooltipCellDecorator<String>(buttonCell);
-    decorator.setText("delete row, if click");
-
-    Column<Parameter, String> buttonCol = new Column<Parameter, String>(decorator) {
-
-      @Override
-      public String getValue(Parameter object) {
-        return "delete";
-      }
-    };
-
-    buttonCol.setFieldUpdater(new FieldUpdater<Parameter, String>() {
-
+    stateColumn.setFieldUpdater(new FieldUpdater<Parameter, String>() {
       @Override
       public void update(int index, Parameter object, String value) {
-        dataProvider.getList().remove(object);
-        // dataProvider.flush();
-        // dataProvider.refresh();
-        rebuildPager(dataGridPagination, dataGridPager);
+        for (State state : states) {
+          if (state.getDisplayLabel().equals(value)) {
+            object.setState(state);
+            dataProvider.getList().get(index).setState(state);
+          }
+        }
+        dataProvider.refresh();
       }
     });
+    ListHandler<Parameter> stateColumnHandler = new ListHandler<Parameter>(dataProvider.getList());
+    stateColumnHandler.setComparator(stateColumn, new Comparator<Parameter>() {
+      @Override
+      public int compare(Parameter o1, Parameter o2) {
+        return o1.getState().getDisplayLabel().compareTo(o2.getState().getDisplayLabel());
+      }
+    });
+    csvTable.addColumn(stateColumn, TableColumName.STATE);
+    csvTable.setColumnWidth(stateColumn, 10, Unit.PCT);
+    csvTable.addColumnSortHandler(stateColumnHandler);
 
-    csvTable.addColumn(buttonCol);
+    //
+    // csvTable.addRangeChangeHandler(new RangeChangeEvent.Handler() {
+    //
+    // @Override
+    // public void onRangeChange(RangeChangeEvent event) {
+    // rebuildPager(pagination, pager);
+    // }
+    // });
+    //
+    // ButtonCell buttonCell = new ButtonCell(IconType.REMOVE, ButtonType.DANGER);
+    // final TooltipCellDecorator<String> decorator = new TooltipCellDecorator<String>(buttonCell);
+    // decorator.setText("delete row, if click");
+    //
+    // Column<Parameter, String> buttonCol = new Column<Parameter, String>(decorator) {
+    //
+    // @Override
+    // public String getValue(Parameter object) {
+    // return "delete";
+    // }
+    // };
+    //
+    // buttonCol.setFieldUpdater(new FieldUpdater<Parameter, String>() {
+    //
+    // @Override
+    // public void update(int index, Parameter object, String value) {
+    // dataProvider.getList().remove(object);
+    // // dataProvider.flush();
+    // // dataProvider.refresh();
+    // rebuildPager(dataGridPagination, dataGridPager);
+    // }
+    // });
+    //
+    // csvTable.addColumn(buttonCol);
 
     final SingleSelectionModel<Parameter> selectionModel = new SingleSelectionModel<Parameter>();
 
