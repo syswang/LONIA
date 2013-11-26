@@ -39,6 +39,7 @@ import com.google.gwt.event.dom.client.DragStartHandler;
 import com.google.gwt.event.dom.client.DropEvent;
 import com.google.gwt.event.dom.client.DropHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -189,11 +190,11 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     initTable(csvDataGrid, dataGridPager, dataGridPagination);
 
     manSourceTab.add(new HTML("<pre class=\"prettyprint linenums pre-scrollable\">"
-        + CustomResources.RESOURCES.manSourceDemo().getText() + "</pre>"));
+        + SafeHtmlUtils.htmlEscape(CustomResources.RESOURCES.manFileText().getText()) + "</pre>"));
 
     textArea.setWidth("98%");
     textArea.setHeight("200px");
-    textArea.setText(CustomResources.RESOURCES.manSourceDemo().getText());
+    textArea.setText(CustomResources.RESOURCES.manFileText().getText());
     textArea.addDragStartHandler(new DragStartHandler() {
 
       @Override
@@ -848,7 +849,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     StringBuffer in = new StringBuffer();
     try {
       ArrayList<ResultRow> result =
-          ManuFileParser.readToBuffer(in, CustomResources.RESOURCES.manFileText().getText());
+          ManuFileParser.readToBuffer(in, this.textArea.getText());
       for (int i = 0; i < result.size(); i++) {
         ResultRow row = result.get(i);
         Parameter p = new Parameter();
