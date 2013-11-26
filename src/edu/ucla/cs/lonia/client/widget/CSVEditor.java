@@ -62,7 +62,7 @@ import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 import com.google.gwt.view.client.SingleSelectionModel;
 
 import edu.ucla.cs.lonia.client.model.DroppableEditTextCell;
-import edu.ucla.cs.lonia.client.parser.FileUtils;
+import edu.ucla.cs.lonia.client.parser.ManuFileParser;
 import edu.ucla.cs.lonia.client.parser.ResultRow;
 import edu.ucla.cs.lonia.client.resources.CustomResources;
 import edu.ucla.cs.lonia.client.util.DisplayLabelRenderer;
@@ -705,7 +705,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     StringBuffer in = new StringBuffer();
     try {
       ArrayList<ResultRow> result =
-          FileUtils.readToBuffer(in, CustomResources.RESOURCES.manSourceDemo().getText());
+          ManuFileParser.readToBuffer(in, CustomResources.RESOURCES.manFileText().getText());
       for (int i = 0; i < result.size(); i++) {
 
         Parameter p = new Parameter();

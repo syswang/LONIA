@@ -1,0 +1,135 @@
+Usage:    bet <input> <output> [options]
+
+Main bet2 options:
+  -o          generate brain surface outline overlaid onto original image
+  -m          generate binary brain mask
+  -s          generate approximate skull image
+  -n          don't generate segmented brain image output
+  -f <f>      fractional intensity threshold (0->1); default=0.5; smaller values give larger brain outline estimates
+  -g <g>      vertical gradient in fractional intensity threshold (-1->1); default=0; positive values give larger brain outline at bottom, smaller at top
+  -r <r>      head radius (mm not voxels); initial surface sphere is set to half of this
+  -c <x y z>  centre-of-gravity (voxels not mm) of initial mesh surface.
+  -t          apply thresholding to segmented brain image and mask
+  -e          generates brain surface as mesh in .vtk format
+
+Variations on default bet2 functionality (mutually exclusive options):
+  (default)   just run bet2
+  -R          robust brain centre estimation (iterates BET several times)
+  -S          eye & optic nerve cleanup (can be useful in SIENA)
+  -B          bias field & neck cleanup (can be useful in SIENA)
+  -Z          improve BET if FOV is very small in Z (by temporarily padding end slices)
+  -F          apply to 4D FMRI data (uses -f 0.3 and dilates brain mask slightly)
+  -A          run bet2 and then betsurf to get additional skull and scalp surfaces (includes registrations)
+  -A2 <T2>    as with -A, when also feeding in non-brain-extracted T2 (includes registrations)
+
+Miscellaneous options:
+  -v          verbose (switch on diagnostic messages)
+  -h          display this help, then exits
+  -d          debug (don't delete temporary intermediate images)
+
+
+
+Usage:./alignlinear standard_file reslice_file air_out -m model_menu_number [options]
+Model Menu:
+3-D models:
+6. rigid body 6 parameter model
+7. global rescale 7 parameter model
+9. traditional 9 parameter model (std must be on AC-PC line)
+12. affine 12 parameter model
+15. perspective 15 parameter model
+
+2-D models (constrained to in-plane, no interpolation):
+23. 2-D rigid body 3 parameter model
+24. 2-D global rescale 4 parameter model
+25. 2-D affine/fixed determinant 5 parameter model
+26. 2-D affine 6 parameter model
+28. 2-D perspective 8 parameter model
+
+
+options: (defaults in parentheses)
+[-b1 FWHM_x(0.000000e+00) FWHM_y(0.000000e+00) FWHM_z(0.000000e+00)] (standard file)
+[-b2 FWHM_x(0.000000e+00) FWHM_y(0.000000e+00) FWHM_z(0.000000e+00)] (reslice file)
+[-c convergence_threshold(0.000010)]
+[-d] use static partitioning (like AIR3.0 and earlier)
+[-e1 standard_file_mask]
+[-e2 reslice_file_mask]
+[-f initialization_file]
+[-fs scaling_initialization_file]
+[-g termination_file [overwrite?(y/n)]]
+[-gs scaling_termination_file [overwrite?(y/n)]]
+[-h halt_after_(5)_iterations_without_improvement]
+[-j] use non-positive definite Hessian matrices (not validated, use at your own risk)
+[-p1 segment_standard_file_into_(1)_partitions]
+[-p2 segment_reslice_file_into_(1)_partitions]
+[-q] assume non-interaction of spatial parameter derivatives
+[-r repeated_iterations(25)]
+[-s initial_sampling(81) final_sampling(1) sampling_decrement_ratio(3)]
+[-t1 threshold_standard_file(7000)]
+[-t2 threshold_reslice_file(7000)]
+[-v] verbose reporting of interim results
+[-x cost_function(1)]
+1. standard deviation of ratio image
+2. least squares
+3. least squares with intensity rescaling
+[-z] (no additional argument; turns on pre-alignment interpolation)
+
+
+Usage: ./reorient input output [options]
+
+options:
+
+[o] (overwrite permission granted)
+[f output_air_file_name] (save a .air file describing the transformation)
+
+[x] (mirror along x axis)
+[y] (mirror along y axis)
+[z] (mirror along z axis)
+
+[xy] (rotate +90 degrees to interchange x and y axes)
+[yx] (rotate -90 degrees to interchange y and x axes)
+[xz] (rotate +90 degrees to interchange x and z axes)
+[zx] (rotate -90 degrees to interchange z and x axes)
+[yz] (rotate +90 degrees to interchange y and z axes)
+[zy] (rotate -90 degrees to interchange z and y axes)
+
+[xx] (rotate 180 degrees around x axis)
+[yy] (rotate 180 degrees around y axis)
+[zz] (rotate 180 degrees around z axis)
+
+
+Usage: ./reslice reslice_parameter_file output [options]
+
+options:
+[-a alternate_reslice_file]
+[-d divide_by_intensity_scale_factor]
+[-df divide_by_intensity_scale_factor_file]
+[-k] (keeps voxel dimensions same as standard file's)
+[-n model {x_half-window_width y_half-window_width z_half-window_width}]
+[-o] (grants overwrite permission)
+[-s multiplicative_intensity_scale_factor]
+[-sf multiplicative_intensity_scale_factor_file]
+[-x x_dim x_size [x_shift]]
+[-y y_dim y_size [y_shift]]
+[-z z_dim z_size [z_shift]]
+
+Interpolation models (trilinear is default interpolation model)
+0. nearest neighbor
+1. trilinear
+
+2. windowed sinc in original xy plane, linear along z
+3. windowed sinc in original xz plane. linear along y
+4. windowed sinc in original yz plane, linear along x
+5. 3D windowed sinc
+
+6. 3D windowed scanline sinc
+7. 3D unwindowed scanline sinc
+
+10. 3D scanline chirp-z
+11. scanline chirp-z in original xy plane, linear along z
+12. scanline chirp-z in original xz plane, linear along y
+13. scanline chirp-z in original yz plane, linear along x
+
+Scanline models are only valid for moderate angles and don't allow perspective distortions
+
+Windowed models require appropriate half-window widths
+
