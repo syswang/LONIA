@@ -95,7 +95,7 @@ public class CustomSelectionCell extends AbstractInputCell<String, String> {
     }
 
     int selectedIndex = getSelectedIndex(viewData == null ? value : viewData);
-    sb.appendHtmlConstant("<select tabindex=\"-1\">");
+    sb.appendHtmlConstant("<select style=\"width:90%;\" tabindex=\"-1\">");
     int index = 0;
     for (String option : options) {
       if (index++ == selectedIndex) {

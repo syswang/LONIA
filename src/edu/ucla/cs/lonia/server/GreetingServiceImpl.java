@@ -1,8 +1,9 @@
 package edu.ucla.cs.lonia.server;
 
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+
 import edu.ucla.cs.lonia.client.GreetingService;
 import edu.ucla.cs.lonia.shared.FieldVerifier;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * The server side implementation of the RPC service.

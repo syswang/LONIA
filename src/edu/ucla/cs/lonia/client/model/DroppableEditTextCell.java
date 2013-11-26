@@ -40,10 +40,10 @@ public class DroppableEditTextCell extends
     AbstractEditableCell<String, DroppableEditTextCell.ViewData> {
 
   interface Template extends SafeHtmlTemplates {
-    @Template("<input type=\"text\" value=\"{0}\" tabindex=\"-1\" ondragover=\"allowDrop(event)\" ondrop=\"drop(event,1,2)\"></input>")
+    @Template("<input type=\"text\" style=\"width:90%;\" value=\"{0}\" tabindex=\"-1\" ondragover=\"allowDrop(event)\" ondrop=\"drop(event,1,2)\"></input>")
     SafeHtml input(String value);
 
-    @Template("<div ondragover=\"allowDrop(event)\" ondrop=\"drop(event, this)\">{2}<span hidden=\"true\">{0}</span><span hidden=\"true\">{1}</span></div>")
+    @Template("<div style=\"width:90%;\" ondragover=\"allowDrop(event)\" ondrop=\"drop(event, this)\">{2}<span hidden=\"true\">{0}</span><span hidden=\"true\">{1}</span></div>")
     SafeHtml display(String a, String b, String value);
   }
 
@@ -138,11 +138,14 @@ public class DroppableEditTextCell extends
 
   private final SafeHtmlRenderer<String> renderer;
 
+  private String columnName;
+
   /**
    * Construct a new EditTextCell that will use a {@link SimpleSafeHtmlRenderer}.
    */
-  public DroppableEditTextCell() {
+  public DroppableEditTextCell(String name) {
     this(SimpleSafeHtmlRenderer.getInstance());
+    this.columnName = name;
   }
 
   /**
