@@ -3,6 +3,7 @@ package edu.ucla.cs.lonia.client.widget;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ButtonCell;
@@ -24,11 +25,9 @@ import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.github.gwtbootstrap.client.ui.constants.IconType;
 import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.SelectionCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DataTransfer;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
@@ -53,12 +52,10 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSelectionPolicy;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.RangeChangeEvent;
@@ -202,22 +199,22 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
       @Override
       public void onDragStart(DragStartEvent event) {
-//        event.preventDefault();
-//        textArea.getElement().getStyle().setCursor(Cursor.MOVE);
+        // event.preventDefault();
+        // textArea.getElement().getStyle().setCursor(Cursor.MOVE);
         DataTransfer dt = event.getDataTransfer();
         dt.setData("DraggedText", textArea.getSelectedText());
         showMoveCursor();
       }
 
     });
-    
+
     textArea.addDragOverHandler(new DragOverHandler() {
 
       @Override
       public void onDragOver(DragOverEvent event) {
         showDefaultCursor();
       }
-      
+
     });
 
     name.addDropHandler(new DropHandler() {
@@ -257,17 +254,17 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   }
 
   public void showMoveCursor() {
-//    textArea.getElement().getStyle().setCursor(Cursor.MOVE);
-//    DOM.setStyleAttribute(RootPanel.getBodyElement(), "cursor", "move");
-//    Element div = Document.get().createDivElement();
-//    div.setId("dragHelper");
-//    div.getStyle().setCursor(Cursor.CROSSHAIR);
-//    div.getStyle().setTop(value, unit);
+    // textArea.getElement().getStyle().setCursor(Cursor.MOVE);
+    // DOM.setStyleAttribute(RootPanel.getBodyElement(), "cursor", "move");
+    // Element div = Document.get().createDivElement();
+    // div.setId("dragHelper");
+    // div.getStyle().setCursor(Cursor.CROSSHAIR);
+    // div.getStyle().setTop(value, unit);
   }
 
   public void showDefaultCursor() {
-//    textArea.getElement().getStyle().setCursor(Cursor.AUTO);
-//    DOM.setStyleAttribute(RootPanel.getBodyElement(), "cursor", "auto");
+    // textArea.getElement().getStyle().setCursor(Cursor.AUTO);
+    // DOM.setStyleAttribute(RootPanel.getBodyElement(), "cursor", "auto");
   }
 
   public native void injectJsAndJsniBinding(CSVEditor editor) /*-{
@@ -310,31 +307,24 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       final Pagination pagination) {
     csvTable.setEmptyTableWidget(new Label("Please add data."));
 
-    TextColumn<Parameter> idCol = new TextColumn<Parameter>() {
-
-      @Override
-      public String getValue(Parameter object) {
-        return String.valueOf(object.getId());
-      }
-    };
-
-    idCol.setSortable(true);
-
-    csvTable.addColumn(idCol, TableColumName.ID);
-
-    ListHandler<Parameter> idColHandler = new ListHandler<Parameter>(dataProvider.getList());
-
-    idColHandler.setComparator(idCol, new Comparator<Parameter>() {
-
-      @Override
-      public int compare(Parameter o1, Parameter o2) {
-        return o1.getId().compareTo(o2.getId());
-      }
-    });
-
-    csvTable.addColumnSortHandler(idColHandler);
-
-    csvTable.getColumnSortList().push(idCol);
+    // id
+//    TextColumn<Parameter> idCol = new TextColumn<Parameter>() {
+//      @Override
+//      public String getValue(Parameter object) {
+//        return String.valueOf(object.getId());
+//      }
+//    };
+//    idCol.setSortable(true);
+//    csvTable.addColumn(idCol, TableColumName.ID);
+//    ListHandler<Parameter> idColHandler = new ListHandler<Parameter>(dataProvider.getList());
+//    idColHandler.setComparator(idCol, new Comparator<Parameter>() {
+//      @Override
+//      public int compare(Parameter o1, Parameter o2) {
+//        return o1.getId().compareTo(o2.getId());
+//      }
+//    });
+//    csvTable.addColumnSortHandler(idColHandler);
+//    csvTable.getColumnSortList().push(idCol);
 
     // // test
     // EditTextCell etc = new EditTextCell();
@@ -395,7 +385,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         rebuildPager(dataGridPagination, dataGridPager);
       }
     });
-    csvTable.setColumnWidth(firstNameColumn, 25, Unit.PCT);
+    //csvTable.setColumnWidth(firstNameColumn, 25, Unit.PCT);
     csvTable.addColumnSortHandler(paraNameColHandler);
 
     // TextColumn<Parameter> paraNameCol = new TextColumn<Parameter>() {
@@ -423,14 +413,16 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     // csvTable.addColumnSortHandler(paraNameColHandler);
 
     //
-    Column<Parameter, String> descriptionCol = new Column<Parameter, String>(new DroppableEditTextCell()) {
-      @Override
-      public String getValue(Parameter object) {
-        return object.getDescription();
-      }
-    };
+    Column<Parameter, String> descriptionCol =
+        new Column<Parameter, String>(new DroppableEditTextCell()) {
+          @Override
+          public String getValue(Parameter object) {
+            return object.getDescription();
+          }
+        };
     descriptionCol.setSortable(true);
-    ListHandler<Parameter> descriptionColHandler = new ListHandler<Parameter>(dataProvider.getList());
+    ListHandler<Parameter> descriptionColHandler =
+        new ListHandler<Parameter>(dataProvider.getList());
     descriptionColHandler.setComparator(descriptionCol, new Comparator<Parameter>() {
       @Override
       public int compare(Parameter o1, Parameter o2) {
@@ -448,35 +440,46 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         rebuildPager(dataGridPagination, dataGridPager);
       }
     });
-    csvTable.setColumnWidth(descriptionCol, 25, Unit.PCT);
+    //csvTable.setColumnWidth(descriptionCol, 25, Unit.PCT);
     csvTable.addColumnSortHandler(descriptionColHandler);
 
-
-    //
-    TextColumn<Parameter> typeCol = new TextColumn<Parameter>() {
-
+    // PType
+    final List<PType> ptypes = Arrays.asList(PType.values());
+    List<String> ptypeNames = new ArrayList<String>();
+    for (PType ptype : ptypes) {
+      ptypeNames.add(ptype.getDisplayLabel());
+    }
+    SelectionCell typeCell = new SelectionCell(ptypeNames);
+    Column<Parameter, String> ptypeColumn = new Column<Parameter, String>(typeCell) {
       @Override
       public String getValue(Parameter object) {
         return object.getType().getDisplayLabel();
       }
     };
-
-    typeCol.setSortable(true);
-    csvTable.addColumn(typeCol, TableColumName.TYPE);
-
-    ListHandler<Parameter> paraTypeColHandler = new ListHandler<Parameter>(dataProvider.getList());
-
-    paraTypeColHandler.setComparator(typeCol, new Comparator<Parameter>() {
-
+    ptypeColumn.setFieldUpdater(new FieldUpdater<Parameter, String>() {
       @Override
-      public int compare(Parameter o1, Parameter o2) {
-        return o1.getType().compareTo(o2.getType());
+      public void update(int index, Parameter object, String value) {
+        for (PType ptype : ptypes) {
+          if (ptype.getDisplayLabel().equals(value)) {
+            object.setType(ptype);
+            dataProvider.getList().get(index).setType(ptype);
+          }
+        }
+        dataProvider.refresh();
       }
     });
+    ListHandler<Parameter> ptypeColumnHandler = new ListHandler<Parameter>(dataProvider.getList());
+    ptypeColumnHandler.setComparator(ptypeColumn, new Comparator<Parameter>() {
+      @Override
+      public int compare(Parameter o1, Parameter o2) {
+        return o1.getType().getDisplayLabel().compareTo(o2.getType().getDisplayLabel());
+      }
+    });
+    csvTable.addColumn(ptypeColumn, TableColumName.TYPE);
+    //csvTable.setColumnWidth(ptypeColumn, 130, Unit.PX);
+    csvTable.addColumnSortHandler(ptypeColumnHandler);
 
-    csvTable.addColumnSortHandler(paraTypeColHandler);
-
-    //
+    //State
     TextColumn<Parameter> stateCol = new TextColumn<Parameter>() {
 
       @Override
@@ -748,9 +751,16 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
         Parameter p = new Parameter();
         p.setDescription(result.get(i).getDescription());
-        p.setState(State.values()[Random.nextInt(State.values().length)]);
+        State state = result.get(i).getState() ? State.ENABLED : State.DISABLED;
+        p.setState(state);
         p.setName(result.get(i).getName());
-        p.setType(PType.values()[Random.nextInt(PType.values().length)]);
+        PType type = PType.NONE;
+        try {
+          type = PType.valueOf(result.get(i).getType().toUpperCase());
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+        p.setType(type);
         addPerson(p);
       }
     } catch (Exception e) {

@@ -80,7 +80,7 @@ public class Parameter {
   }
 
   public enum PType implements HasDisplayLabel {
-    NONE("none"), STRING("String"), INTEGER("Integer");
+    NONE("none"), STRING("String"), FILE("File");
 
     private final String displayLabel;
 
