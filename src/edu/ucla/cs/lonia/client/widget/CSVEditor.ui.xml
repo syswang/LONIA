@@ -30,7 +30,7 @@
 			<b:FluidRow>
 				<b:Column size="12">
 					<b:TabPanel>
-						<b:Tab heading="Source">
+						<b:Tab heading="Source" active="true">
 							<b:Heading size="4">Edit Mode</b:Heading>
 							<b:Paragraph>You can paste manual file here. </b:Paragraph>
 							<b:TextArea ui:field="textArea">
@@ -45,7 +45,7 @@
 								returns null.
 							</b:TextArea>
 						</b:Tab>
-						<b:Tab ui:field="manSourceTab" heading="Display" active="true">
+						<b:Tab ui:field="manSourceTab" heading="Display">
 							<b:Heading size="4">Display Mode</b:Heading>
 							<!-- <b:Image resource="{resource.logo}" /> -->
 						</b:Tab>
