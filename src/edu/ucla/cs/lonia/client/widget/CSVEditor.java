@@ -28,22 +28,13 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.adapters.SimpleEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.DragEndEvent;
-import com.google.gwt.event.dom.client.DragEndHandler;
-import com.google.gwt.event.dom.client.DragLeaveEvent;
-import com.google.gwt.event.dom.client.DragLeaveHandler;
-import com.google.gwt.event.dom.client.DragOverEvent;
-import com.google.gwt.event.dom.client.DragOverHandler;
 import com.google.gwt.event.dom.client.DragStartEvent;
 import com.google.gwt.event.dom.client.DragStartHandler;
-import com.google.gwt.event.dom.client.DropEvent;
-import com.google.gwt.event.dom.client.DropHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates.Template;
@@ -218,13 +209,11 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       @Override
       public void onDragStart(DragStartEvent event) {
         // event.preventDefault();
-        // textArea.getElement().getStyle().setCursor(Cursor.MOVE);
         DataTransfer dt = event.getDataTransfer();
         dt.setData("DraggedText", textArea.getSelectedText());
         if (div == null) {
           div = Document.get().createDivElement();
           div.setId("dragHelper");
-          // div.setAttribute("style", "position:absolute;");
           div.getStyle().setCursor(Cursor.CROSSHAIR);
           div.getStyle().setWidth(100, Unit.PX);
           div.getStyle().setHeight(200, Unit.PX);
@@ -236,31 +225,10 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       }
 
     });
-
-    textArea.addDragEndHandler(new DragEndHandler() {
-
-      @Override
-      public void onDragEnd(DragEndEvent event) {
-        // event.preventDefault();
-        // showDefaultCursor();
-      }
-
-    });
-  }
-
-  public void showDefaultCursor() {
-    // textArea.getElement().getStyle().setCursor(Cursor.AUTO);
-    // DOM.setStyleAttribute(RootPanel.getBodyElement(), "cursor", "auto");
-    if (div != null) {
-      div.getStyle().setVisibility(Visibility.HIDDEN);
-      this.getElement().removeChild(div);
-      div = null;
-    }
   }
 
   public native void injectJsAndJsniBinding(CSVEditor editor) /*-{
 		$wnd.updateDataGrid = function(text, a, b) {
-			//alert("saf");
 			editor.@edu.ucla.cs.lonia.client.widget.CSVEditor::updateDataGrid(Ljava/lang/String;Ljava/lang/String;I)(text,a,b);
 		}
 		$wnd.allowDrop = function(event) {
@@ -269,18 +237,11 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 		$wnd.drop = function(ev, x) {
 			ev.preventDefault();
 			var data = ev.dataTransfer.getData("DraggedText");
-			//alert(data);
-			//alert(x);
 			var childArray = x.children;
-			//alert(childArray[0].innerHTML);
-			//alert(childArray[1].innerHTML);
 			var a = childArray[0].innerHTML;
 			var b = childArray[1].innerHTML;
-			//alert("before");
-			// note, must use $wnd.myfunction to call myfunction
+			// note, must use $wnd.myfunction to call myfunction, not window.myfunction
 			$wnd.updateDataGrid(data, a, parseInt(b, 10));
-			//this.@edu.ucla.cs.lonia.client.widget.CSVEditor::showDefaultCursor()();
-			//alert("after");
 		}
 		$wnd.drag = function(ev) {
 			alert("dragged!");
@@ -337,30 +298,6 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     csvTable.addColumn(firstNameColumn, TableColumName.PARAMETER_NAME);
     csvTable.setColumnWidth(firstNameColumn, 10, Unit.PCT);
     csvTable.addColumnSortHandler(paraNameColHandler);
-
-    // TextColumn<Parameter> paraNameCol = new TextColumn<Parameter>() {
-    //
-    // @Override
-    // public String getValue(Parameter object) {
-    // return object.getName();
-    // }
-    // };
-    //
-    // paraNameCol.setSortable(true);
-    // csvTable.addColumn(paraNameCol, TableColumName.PARAMETER_NAME);
-    //
-    // ListHandler<Parameter> paraNameColHandler = new
-    // ListHandler<Parameter>(dataProvider.getList());
-    //
-    // paraNameColHandler.setComparator(paraNameCol, new Comparator<Parameter>() {
-    //
-    // @Override
-    // public int compare(Parameter o1, Parameter o2) {
-    // return o1.getName().compareTo(o2.getName());
-    // }
-    // });
-    //
-    // csvTable.addColumnSortHandler(paraNameColHandler);
 
     // Description
     Column<Parameter, String> descriptionCol =
