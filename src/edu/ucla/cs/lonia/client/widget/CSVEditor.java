@@ -24,12 +24,18 @@ import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DataTransfer;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.dom.client.Style.Visibility;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.adapters.SimpleEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DragEndEvent;
+import com.google.gwt.event.dom.client.DragEndHandler;
 import com.google.gwt.event.dom.client.DragLeaveEvent;
 import com.google.gwt.event.dom.client.DragLeaveHandler;
 import com.google.gwt.event.dom.client.DragOverEvent;
@@ -39,6 +45,9 @@ import com.google.gwt.event.dom.client.DragStartHandler;
 import com.google.gwt.event.dom.client.DropEvent;
 import com.google.gwt.event.dom.client.DropHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.safehtml.client.SafeHtmlTemplates;
+import com.google.gwt.safehtml.client.SafeHtmlTemplates.Template;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -155,6 +164,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @Editor.Ignore
   Button parse;
 
+  Element div = null;
+
   SimplePager dataGridPager = new SimplePager();
 
   ListDataProvider<Parameter> dataProvider = new ListDataProvider<Parameter>();
@@ -168,6 +179,13 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   }
 
   Driver driver = GWT.create(Driver.class);
+
+  interface Template extends SafeHtmlTemplates {
+    @Template("<label>{0}</label><br/>Drop to cell in the table")
+    SafeHtml display(String draggedText);
+  }
+
+  private static Template template = GWT.create(Template.class);;
 
   public CSVEditor() {
 
@@ -203,16 +221,28 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         // textArea.getElement().getStyle().setCursor(Cursor.MOVE);
         DataTransfer dt = event.getDataTransfer();
         dt.setData("DraggedText", textArea.getSelectedText());
-        showMoveCursor();
+        if (div == null) {
+          div = Document.get().createDivElement();
+          div.setId("dragHelper");
+          // div.setAttribute("style", "position:absolute;");
+          div.getStyle().setCursor(Cursor.CROSSHAIR);
+          div.getStyle().setWidth(100, Unit.PX);
+          div.getStyle().setHeight(200, Unit.PX);
+          CSVEditor.this.getElement().appendChild(div);
+          div.getStyle().setBackgroundColor("red");
+        }
+        div.setInnerText(textArea.getSelectedText());
+        dt.setDragImage(div, -5, -5);
       }
 
     });
 
-    textArea.addDragOverHandler(new DragOverHandler() {
+    textArea.addDragEndHandler(new DragEndHandler() {
 
       @Override
-      public void onDragOver(DragOverEvent event) {
-        showDefaultCursor();
+      public void onDragEnd(DragEndEvent event) {
+        // event.preventDefault();
+        // showDefaultCursor();
       }
 
     });
@@ -253,18 +283,14 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     });
   }
 
-  public void showMoveCursor() {
-    // textArea.getElement().getStyle().setCursor(Cursor.MOVE);
-    // DOM.setStyleAttribute(RootPanel.getBodyElement(), "cursor", "move");
-    // Element div = Document.get().createDivElement();
-    // div.setId("dragHelper");
-    // div.getStyle().setCursor(Cursor.CROSSHAIR);
-    // div.getStyle().setTop(value, unit);
-  }
-
   public void showDefaultCursor() {
     // textArea.getElement().getStyle().setCursor(Cursor.AUTO);
     // DOM.setStyleAttribute(RootPanel.getBodyElement(), "cursor", "auto");
+    if (div != null) {
+      div.getStyle().setVisibility(Visibility.HIDDEN);
+      this.getElement().removeChild(div);
+      div = null;
+    }
   }
 
   public native void injectJsAndJsniBinding(CSVEditor editor) /*-{
@@ -288,7 +314,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 			//alert("before");
 			// note, must use $wnd.myfunction to call myfunction
 			$wnd.updateDataGrid(data, a, parseInt(b, 10));
-			this.@edu.ucla.cs.lonia.client.widget.CSVEditor::showDefaultCursor()();
+			//this.@edu.ucla.cs.lonia.client.widget.CSVEditor::showDefaultCursor()();
 			//alert("after");
 		}
 		$wnd.drag = function(ev) {
@@ -315,57 +341,6 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   private void initTable(AbstractCellTable<Parameter> csvTable, final SimplePager pager,
       final Pagination pagination) {
     csvTable.setEmptyTableWidget(new Label("Please add data."));
-
-    // id
-    // TextColumn<Parameter> idCol = new TextColumn<Parameter>() {
-    // @Override
-    // public String getValue(Parameter object) {
-    // return String.valueOf(object.getId());
-    // }
-    // };
-    // idCol.setSortable(true);
-    // csvTable.addColumn(idCol, TableColumName.ID);
-    // ListHandler<Parameter> idColHandler = new ListHandler<Parameter>(dataProvider.getList());
-    // idColHandler.setComparator(idCol, new Comparator<Parameter>() {
-    // @Override
-    // public int compare(Parameter o1, Parameter o2) {
-    // return o1.getId().compareTo(o2.getId());
-    // }
-    // });
-    // csvTable.addColumnSortHandler(idColHandler);
-    // csvTable.getColumnSortList().push(idCol);
-
-    // // test
-    // EditTextCell etc = new EditTextCell();
-    // etc.
-    // Column<Person, String> firstNameColumn = new Column<Person, String>(etc) {
-    // @Override
-    // public String getValue(Person object) {
-    // return object.getName();
-    // }
-    // };
-    // firstNameColumn.setSortable(true);
-    // firstNameColumn.setFieldUpdater(new FieldUpdater<Person, String>() {
-    // @Override
-    // public void update(int index, Person object, String value) {
-    // // Called when the user changes the value.
-    // object.setName(value);
-    // dataProvider.refresh();
-    // }
-    // });
-    //
-    // exampleTable.addColumn(firstNameColumn, "First Name");
-    // ListHandler<Person> firstNameColHandler = new ListHandler<Person>(dataProvider.getList());
-    //
-    // firstNameColHandler.setComparator(firstNameColumn, new Comparator<Person>() {
-    //
-    // @Override
-    // public int compare(Person o1, Person o2) {
-    // return o1.getName().compareTo(o2.getName());
-    // }
-    // });
-    //
-    // exampleTable.addColumnSortHandler(firstNameColHandler);
 
     // Name
     DroppableEditTextCell etc = new DroppableEditTextCell(TableColumName.PARAMETER_NAME);
@@ -848,8 +823,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   void parse() {
     StringBuffer in = new StringBuffer();
     try {
-      ArrayList<ResultRow> result =
-          ManuFileParser.readToBuffer(in, this.textArea.getText());
+      ArrayList<ResultRow> result = ManuFileParser.readToBuffer(in, this.textArea.getText());
       for (int i = 0; i < result.size(); i++) {
         ResultRow row = result.get(i);
         Parameter p = new Parameter();
