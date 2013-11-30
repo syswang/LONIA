@@ -246,41 +246,6 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       }
 
     });
-
-    name.addDropHandler(new DropHandler() {
-
-      @Override
-      public void onDrop(DropEvent event) {
-        // TODO Auto-generated method stub
-        DataTransfer dt = event.getDataTransfer();
-        // event.
-        event.preventDefault();
-        name.setText(dt.getData("haha"));
-        nameHelpInline.setText("");
-      }
-
-    });
-
-    name.addDragOverHandler(new DragOverHandler() {
-
-      @Override
-      public void onDragOver(DragOverEvent event) {
-        // TODO Auto-generated method stub
-        nameHelpInline.setText("Drop Para Name Here!");
-        // nameHelpInline.sett
-      }
-
-    });
-
-    name.addDragLeaveHandler(new DragLeaveHandler() {
-
-      @Override
-      public void onDragLeave(DragLeaveEvent event) {
-        // TODO Auto-generated method stub
-        nameHelpInline.setText("");
-      }
-
-    });
   }
 
   public void showDefaultCursor() {
