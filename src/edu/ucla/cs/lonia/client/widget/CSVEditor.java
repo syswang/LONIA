@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import com.github.gwtbootstrap.client.ui.AlertBlock;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.github.gwtbootstrap.client.ui.DataGrid;
@@ -19,14 +20,12 @@ import com.github.gwtbootstrap.client.ui.Tab;
 import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.ValueListBox;
+import com.github.gwtbootstrap.client.ui.constants.AlertType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DataTransfer;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Style.Cursor;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
@@ -155,7 +154,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @Editor.Ignore
   Button parse;
 
-  Element div = null;
+  AlertBlock ab = null;
 
   SimplePager dataGridPager = new SimplePager();
 
@@ -211,17 +210,23 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         // event.preventDefault();
         DataTransfer dt = event.getDataTransfer();
         dt.setData("DraggedText", textArea.getSelectedText());
-        if (div == null) {
-          div = Document.get().createDivElement();
-          div.setId("dragHelper");
-          div.getStyle().setCursor(Cursor.CROSSHAIR);
-          div.getStyle().setWidth(100, Unit.PX);
-          div.getStyle().setHeight(200, Unit.PX);
-          CSVEditor.this.getElement().appendChild(div);
-          div.getStyle().setBackgroundColor("red");
+        if (ab == null) {
+          ab = new AlertBlock();
+          ab.setAnimation(true);
+          ab.setType(AlertType.INFO);
+          ab.getElement().setId("dragHelper");
+          ab.getElement().getStyle().setFontSize(20, Unit.PX);
+          ab.getElement().getStyle().setWidth(100, Unit.PX);
+          ab.getElement().getStyle().setHeight(25, Unit.PX);
+          CSVEditor.this.getElement().appendChild(ab.getElement());
         }
-        div.setInnerText(textArea.getSelectedText());
-        dt.setDragImage(div, -5, -5);
+        String text = textArea.getSelectedText();
+        if (text.length() > 20) {
+          text = text.substring(0, 20) + "...";
+        }
+        ab.setText(text);
+
+        dt.setDragImage(ab.getElement(), -5, -5);
       }
 
     });
