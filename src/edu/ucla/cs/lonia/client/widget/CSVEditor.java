@@ -36,7 +36,6 @@ import com.google.gwt.event.dom.client.DragStartEvent;
 import com.google.gwt.event.dom.client.DragStartHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
-import com.google.gwt.safehtml.client.SafeHtmlTemplates.Template;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -563,18 +562,18 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @UiHandler("submitExampleForm")
   public void onSubmitForm(SubmitEvent e) {
 
-    Parameter person = driver.flush();
+    Parameter para = driver.flush();
 
     boolean hasError = false;
 
-    if (person.getName() == null || person.getName().isEmpty()) {
+    if (para.getName() == null || para.getName().isEmpty()) {
 
       nameControlGroup.setType(ControlGroupType.ERROR);
       nameHelpInline.setText("paraName should be input");
       hasError = true;
     }
 
-    if (person.getDescription() == null) {
+    if (para.getDescription() == null) {
       descriptionControlGroup.setType(ControlGroupType.ERROR);
       descriptionHelpInline.setText("input a number for test.");
       hasError = true;
@@ -585,18 +584,18 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       return;
     }
 
-    addPerson(person);
+    addParameter(para);
 
     setPerson(new Parameter());
     e.cancel();
   }
 
-  private void addPerson(Parameter person) {
-    if (person.getId() == null) {
-      person.setId(dataProvider.getList().size() + 1);
-      dataProvider.getList().add(person);
+  private void addParameter(Parameter para) {
+    if (para.getId() == null) {
+      para.setId(dataProvider.getList().size() + 1);
+      dataProvider.getList().add(para);
     } else {
-      csvDataGrid.getSelectionModel().setSelected(person, false);
+      csvDataGrid.getSelectionModel().setSelected(para, false);
       dataProvider.refresh();
     }
 
@@ -691,7 +690,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       p.setState(State.values()[Random.nextInt(State.values().length)]);
       p.setName("paraName" + csvDataGrid.getRowCount());
       p.setType(PType.values()[Random.nextInt(PType.values().length)]);
-      addPerson(p);
+      addParameter(p);
     }
 
   }
@@ -748,7 +747,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         p.setCardinality(row.getCardinality());
         p.setPrefix(row.getPrefix());
         p.setIsRequired(row.getRequire());
-        addPerson(p);
+        addParameter(p);
       }
     } catch (Exception e) {
       // TODO Auto-generated catch block
