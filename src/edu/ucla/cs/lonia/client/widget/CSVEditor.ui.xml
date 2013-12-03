@@ -62,8 +62,8 @@
 						</b:ButtonGroup>
 						<b:Button type="INFO" ui:field="parse">Parse</b:Button> <!-- <b:Button>5</b:Button> -->
 						<b:DropdownButton text="Import">
-							<b:NavLink>Browse File</b:NavLink>
-							<b:NavLink>From Other Sources</b:NavLink>
+							<b:NavLink ui:field="browseFile">Browse File</b:NavLink>
+							<!-- <b:NavLink>From Other Sources</b:NavLink> -->
 						</b:DropdownButton>
 						<b:SplitDropdownButton text="Export">
 							<b:NavLink>To *.csv (default)</b:NavLink>
@@ -130,6 +130,28 @@
 						<b:SubmitButton type="PRIMARY" ui:field="saveButton">Save
 							changes</b:SubmitButton>
 						<b:Button ui:field="cancelButton">Cancel</b:Button>
+					</b:FormActions>
+				</b:ModalFooter>
+			</b:Modal>
+		</b:Form>
+		<b:Form type="HORIZONTAL" action="//gwtbootstrap.github.com"
+			ui:field="submitFileForm">
+			<b:Modal ui:field="browseFileModal" title="Browse File"
+				backdrop="STATIC" closeVisible="true" keyboard="true" animation="true">
+				<b:Fieldset>
+					<b:FileUpload ui:field="fileUpload"></b:FileUpload>
+					<b:Paragraph>
+					</b:Paragraph>
+					<b:AlertBlock ui:field="uploadAlert" type="ERROR"></b:AlertBlock>
+					<b:AlertBlock ui:field="previewImport" type="INFO">
+						<b:Paragraph ui:field="previewText">
+						</b:Paragraph>
+					</b:AlertBlock>
+				</b:Fieldset>
+				<b:ModalFooter>
+					<b:FormActions>
+						<b:SubmitButton type="PRIMARY" ui:field="uploadFile">OK</b:SubmitButton>
+						<b:Button ui:field="cancelUpload">Cancel</b:Button>
 					</b:FormActions>
 				</b:ModalFooter>
 			</b:Modal>

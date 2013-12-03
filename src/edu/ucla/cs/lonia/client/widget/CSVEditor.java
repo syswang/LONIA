@@ -9,12 +9,14 @@ import com.github.gwtbootstrap.client.ui.AlertBlock;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.github.gwtbootstrap.client.ui.DataGrid;
+import com.github.gwtbootstrap.client.ui.FileUpload;
 import com.github.gwtbootstrap.client.ui.Form;
 import com.github.gwtbootstrap.client.ui.Form.SubmitEvent;
 import com.github.gwtbootstrap.client.ui.HelpInline;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.Pagination;
+import com.github.gwtbootstrap.client.ui.Paragraph;
 import com.github.gwtbootstrap.client.ui.SubmitButton;
 import com.github.gwtbootstrap.client.ui.Tab;
 import com.github.gwtbootstrap.client.ui.TextArea;
@@ -36,6 +38,7 @@ import com.google.gwt.event.dom.client.DragStartEvent;
 import com.google.gwt.event.dom.client.DragStartHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
+import com.google.gwt.safehtml.client.SafeHtmlTemplates.Template;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -125,10 +128,28 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   Form submitExampleForm;
 
   @UiField
+  Form submitFileForm;
+
+  @UiField
   Modal editModal;
 
   @UiField
+  Modal browseFileModal;
+
+  @UiField
   Tab manSourceTab;
+
+  @UiField
+  @Editor.Ignore
+  AlertBlock uploadAlert;
+
+  @UiField
+  @Editor.Ignore
+  AlertBlock previewImport;
+
+  @UiField
+  @Editor.Ignore
+  Paragraph previewText;
 
   @UiField
   com.github.gwtbootstrap.client.ui.Column mainPanel;
@@ -153,7 +174,17 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @Editor.Ignore
   Button parse;
 
+  @UiField
+  @Editor.Ignore
+  FileUpload fileUpload;
+
+  @UiField
+  @Editor.Ignore
+  SubmitButton uploadFile;
+
   AlertBlock ab = null;
+
+  String fileContent = null;
 
   SimplePager dataGridPager = new SimplePager();
 
@@ -249,6 +280,19 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 		}
 		$wnd.drag = function(ev) {
 			alert("dragged!");
+		}
+		$wnd.readText = function(that) {
+			if (that.files && that.files[0]) {
+				var reader = new FileReader();
+				reader.onload = function(e) {
+					var output = e.target.result;
+					var filename = that.files[0].name;
+					editor.@edu.ucla.cs.lonia.client.widget.CSVEditor::setUploadTextPreview(Ljava/lang/String;Ljava/lang/String;)(output, filename);
+					//process text to show only lines with "@":       
+					//output=output.split("\n").filter(/./.test, /\@/).join("\n");
+				};
+				reader.readAsText(that.files[0]);
+			}
 		}
   }-*/;
 
@@ -705,6 +749,24 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     nameHelpInline.setText("");
   }
 
+  public void setUploadTextPreview(String text, String filename) {
+    if (text == null) {
+      Window.alert("File loading failed!");
+      return;
+    }
+    uploadFile.setEnabled(true);
+    fileContent = text;
+    previewImport.setVisible(true);
+    previewImport.setClose(false);
+    previewImport.setHeading("Preview");
+    String[] list = text.split("\n");
+    StringBuilder content = new StringBuilder();
+    for (String s : list) {
+      content.append("<br>" + SafeHtmlUtils.htmlEscape(s));
+    }
+    previewText.getElement().setInnerHTML(content.toString());
+  }
+
   @UiHandler("cancelButton")
   public void onCancelClick(ClickEvent e) {
     submitExampleForm.reset();
@@ -724,6 +786,35 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @UiHandler("parse")
   void onAddClick(ClickEvent event) {
     parse();
+  }
+
+  @UiHandler("browseFile")
+  void onBrowseClick(ClickEvent event) {
+    browseFileModal.show();
+    fileUpload.getElement().setAttribute("onChange", "readText(this)");
+    uploadAlert.setVisible(false);
+    uploadAlert.setClose(false);
+    previewImport.setVisible(false);
+    uploadFile.setEnabled(false);
+  }
+
+  @UiHandler("uploadFile")
+  void onUploadFileClick(ClickEvent event) {
+    String name = fileUpload.getFilename();
+    if (name.length() != 0 && fileContent != null) {
+      browseFileModal.hide();
+      textArea.setText(fileContent);
+    } else {
+      uploadAlert.setVisible(true);
+      uploadAlert.setHeading("Error");
+      uploadAlert.setText("Please select a file !");
+    }
+  }
+
+  @UiHandler("cancelUpload")
+  public void onCancelUploadClick(ClickEvent e) {
+    submitFileForm.reset();
+    browseFileModal.hide();
   }
 
   void parse() {
