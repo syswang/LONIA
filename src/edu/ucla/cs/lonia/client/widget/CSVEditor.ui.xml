@@ -69,6 +69,7 @@
 							<b:NavLink>To *.csv (default)</b:NavLink>
 							<b:NavLink>To *.txt</b:NavLink>
 						</b:SplitDropdownButton>
+						<b:Button type="WARNING" ui:field="sendToServer">Send To Server Test</b:Button> 
 					</b:ButtonToolbar>
 				</b:Column>
 				<b:Column size="6">

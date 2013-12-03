@@ -51,6 +51,7 @@ import com.google.gwt.user.cellview.client.HasKeyboardSelectionPolicy.KeyboardSe
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
@@ -60,8 +61,11 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 import com.google.gwt.view.client.SelectionChangeEvent.Handler;
 import com.google.gwt.view.client.SingleSelectionModel;
 
+import edu.ucla.cs.lonia.client.GreetingService;
+import edu.ucla.cs.lonia.client.GreetingServiceAsync;
 import edu.ucla.cs.lonia.client.model.CustomSelectionCell;
 import edu.ucla.cs.lonia.client.model.DroppableEditTextCell;
+import edu.ucla.cs.lonia.client.model.ParseResult;
 import edu.ucla.cs.lonia.client.parser.ManuFileParser;
 import edu.ucla.cs.lonia.client.parser.ResultRow;
 import edu.ucla.cs.lonia.client.resources.CustomResources;
@@ -754,6 +758,14 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     parse();
   }
 
+  @UiHandler("sendToServer")
+  void onSendClick(ClickEvent event) {
+    ParseResult pr = new ParseResult();
+    pr.setKey(this.textArea.getText());
+    pr.setValue(null);
+    sendResultToServer(pr);
+  }
+
   @UiHandler("browseFile")
   void onBrowseClick(ClickEvent event) {
     browseFileModal.show();
@@ -783,9 +795,14 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     browseFileModal.hide();
   }
 
+  public boolean flag = false;
+
   void parse() {
     StringBuffer in = new StringBuffer();
     try {
+      if (flag == true) {
+        return;
+      }
       ArrayList<ResultRow> result = ManuFileParser.readToBuffer(in, this.textArea.getText());
       for (int i = 0; i < result.size(); i++) {
         ResultRow row = result.get(i);
@@ -810,5 +827,32 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+  }
+
+  private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
+
+  // void sendResultToServer(String textToServer) {
+  private void sendResultToServer(ParseResult result) {
+    // First, we validate the input.
+
+    // Then, we send the input to the server.
+
+    greetingService.sendToServer(result, new AsyncCallback<ParseResult>() {
+      public void onFailure(Throwable caught) {
+        // print something to report failure
+        Window.alert("Failed sending result to server");
+      }
+
+      public void onSuccess(ParseResult result) {
+        // print something to report success
+        if (result.getValue() == null) {
+          Window.alert("Succeeded sending result to server: null");
+          flag = false;
+        } else {
+          Window.alert("Succeeded sending result to server: done");
+          flag = true;
+        }
+      }
+    });
   }
 }
