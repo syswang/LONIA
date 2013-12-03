@@ -450,40 +450,6 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     csvTable.setColumnWidth(stateColumn, 10, Unit.PCT);
     csvTable.addColumnSortHandler(stateColumnHandler);
 
-    //
-    // csvTable.addRangeChangeHandler(new RangeChangeEvent.Handler() {
-    //
-    // @Override
-    // public void onRangeChange(RangeChangeEvent event) {
-    // rebuildPager(pagination, pager);
-    // }
-    // });
-    //
-    // ButtonCell buttonCell = new ButtonCell(IconType.REMOVE, ButtonType.DANGER);
-    // final TooltipCellDecorator<String> decorator = new TooltipCellDecorator<String>(buttonCell);
-    // decorator.setText("delete row, if click");
-    //
-    // Column<Parameter, String> buttonCol = new Column<Parameter, String>(decorator) {
-    //
-    // @Override
-    // public String getValue(Parameter object) {
-    // return "delete";
-    // }
-    // };
-    //
-    // buttonCol.setFieldUpdater(new FieldUpdater<Parameter, String>() {
-    //
-    // @Override
-    // public void update(int index, Parameter object, String value) {
-    // dataProvider.getList().remove(object);
-    // // dataProvider.flush();
-    // // dataProvider.refresh();
-    // rebuildPager(dataGridPagination, dataGridPager);
-    // }
-    // });
-    //
-    // csvTable.addColumn(buttonCol);
-
     // Prefix
     DroppableEditTextCell prefixCell = new DroppableEditTextCell(TableColumName.PREFIX);
 
