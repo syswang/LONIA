@@ -191,6 +191,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
   ListDataProvider<Parameter> dataProvider = new ListDataProvider<Parameter>();
 
+  SingleSelectionModel<Parameter> selectionModel;
+
   private static CSVEditorUiBinder uiBinder = GWT.create(CSVEditorUiBinder.class);
 
   interface CSVEditorUiBinder extends UiBinder<Widget, CSVEditor> {
@@ -532,14 +534,14 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     csvTable.setColumnWidth(checkColumn, 10, Unit.PCT);
     // csvTable.setSelectionEnabled(true);
 
-    final SingleSelectionModel<Parameter> selectionModel = new SingleSelectionModel<Parameter>();
+    selectionModel = new SingleSelectionModel<Parameter>();
 
     selectionModel.addSelectionChangeHandler(new Handler() {
 
       @Override
       public void onSelectionChange(SelectionChangeEvent event) {
-        Parameter person = selectionModel.getSelectedObject();
-        CSVEditor.this.driver.edit(person);
+        Parameter para = selectionModel.getSelectedObject();
+        CSVEditor.this.driver.edit(para);
       }
     });
 
@@ -761,6 +763,22 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @UiHandler("editRow")
   void onClickEditRow(ClickEvent event) {
     editModal.show();
+  }
+
+  @UiHandler("deleteRow")
+  void onClickDeleteRow(ClickEvent event) {
+    if (selectionModel != null) {
+      Parameter para = selectionModel.getSelectedObject();
+      if (para != null) {
+        CSVEditor.this.driver.edit(para);
+        dataProvider.getList().remove(para);
+        dataProvider.flush();
+        dataProvider.refresh();
+        rebuildPager(dataGridPagination, dataGridPager);
+      }
+    } else {
+      Window.alert("Please select a row !");
+    }
   }
 
   @UiHandler("saveButton")
