@@ -642,11 +642,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       csvDataGrid.getSelectionModel().setSelected(para, false);
       dataProvider.refresh();
     }
-
     dataProvider.flush();
-
     rebuildPager(dataGridPagination, dataGridPager);
-
   }
 
   private void rebuildPager(final Pagination pagination, final SimplePager pager) {
@@ -793,6 +790,9 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
   @UiHandler("addRow")
   void onClickAddRow(ClickEvent event) {
+    Parameter para = new Parameter();
+    setPerson(para);
+    editModal.show();
   }
 
   @UiHandler("editRow")
