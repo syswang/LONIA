@@ -156,11 +156,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
   @UiField
   com.github.gwtbootstrap.client.ui.Column mainPanel;
-
-  @UiField
-  @Editor.Ignore
-  Label dragTest;
-
+  
   @UiField
   @Editor.Ignore
   Button addRow;

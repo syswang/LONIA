@@ -13,16 +13,14 @@
 		<b:FluidContainer>
 			<b:FluidRow>
 				<b:Column size="12">
-					<b:Heading size="2">
-						Edit Parsing Result
-					</b:Heading>
+					<!-- <b:Heading size="2"> Edit Parsing Result </b:Heading> -->
 					<b:Paragraph>
-						You can edit the pasring results in the table below.
-						Click
-						<b:Label ui:field="dragTest" type="INFO">Parse</b:Label>
-						button to process
-						<b:Code>UNIX Manual File</b:Code>
-						.
+						<b:Label type="INFO">Instruction:</b:Label>
+						Please paste or import a file, then click
+						<b:Code>Parse</b:Code>
+						button. The parsing result can be downloaded by clicking
+						<b:Code>Export</b:Code>
+						button.
 						<br />
 					</b:Paragraph>
 				</b:Column>
@@ -30,9 +28,9 @@
 			<b:FluidRow>
 				<b:Column size="12">
 					<b:TabPanel>
-						<b:Tab heading="Source" active="true">
-							<b:Heading size="4">Edit Mode</b:Heading>
-							<b:Paragraph>You can paste manual file here. </b:Paragraph>
+						<b:Tab heading="Edit Mode" active="true">
+							<!-- <b:Heading size="4">Edit Mode</b:Heading> -->
+							<!-- <b:Paragraph>You can paste manual file here. </b:Paragraph> -->
 							<b:TextArea ui:field="textArea">
 								If none is selected, the Index of
 								zero and One represents the current
@@ -45,8 +43,8 @@
 								returns null.
 							</b:TextArea>
 						</b:Tab>
-						<b:Tab ui:field="manSourceTab" heading="Display">
-							<b:Heading size="4">Display Mode</b:Heading>
+						<b:Tab ui:field="manSourceTab" heading="Read Mode">
+							<!-- <b:Heading size="4">Display Mode</b:Heading> -->
 							<!-- <b:Image resource="{resource.logo}" /> -->
 						</b:Tab>
 					</b:TabPanel>
