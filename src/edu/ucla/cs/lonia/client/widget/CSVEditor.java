@@ -70,7 +70,9 @@ import edu.ucla.cs.lonia.client.model.Parameter;
 import edu.ucla.cs.lonia.client.model.ParseResult;
 import edu.ucla.cs.lonia.client.model.Parameter.PType;
 import edu.ucla.cs.lonia.client.model.Parameter.State;
+import edu.ucla.cs.lonia.client.parser.BasicParser;
 import edu.ucla.cs.lonia.client.parser.ManuFileParser;
+import edu.ucla.cs.lonia.client.parser.ParserFactory;
 import edu.ucla.cs.lonia.client.parser.ResultRow;
 import edu.ucla.cs.lonia.client.util.DisplayLabelRenderer;
 
@@ -913,7 +915,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       if (flag == true) {
         return;
       }
-      ArrayList<ResultRow> result = ManuFileParser.readToBuffer(in, this.textArea.getText());
+      BasicParser parser = ParserFactory.getInstance().createParser("manuParser");  
+      ArrayList<ResultRow> result = parser.parse(this.textArea.getText());
       for (int i = 0; i < result.size(); i++) {
         ResultRow row = result.get(i);
         Parameter p = new Parameter();
