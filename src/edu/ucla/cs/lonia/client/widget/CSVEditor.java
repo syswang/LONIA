@@ -69,7 +69,6 @@ import edu.ucla.cs.lonia.client.model.DroppableEditTextCell;
 import edu.ucla.cs.lonia.client.model.ParseResult;
 import edu.ucla.cs.lonia.client.parser.ManuFileParser;
 import edu.ucla.cs.lonia.client.parser.ResultRow;
-import edu.ucla.cs.lonia.client.resources.CustomResources;
 import edu.ucla.cs.lonia.client.util.DisplayLabelRenderer;
 import edu.ucla.cs.lonia.client.util.Parameter;
 import edu.ucla.cs.lonia.client.util.Parameter.PType;
@@ -197,6 +196,9 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
   SimplePager dataGridPager = new SimplePager();
 
+  @Editor.Ignore
+  HTML prettyCode = null;
+
   ListDataProvider<Parameter> dataProvider = new ListDataProvider<Parameter>();
 
   SingleSelectionModel<Parameter> selectionModel;
@@ -243,12 +245,15 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     deleteRow.setEnabled(false);
     editRow.setEnabled(false);
 
-    manSourceTab.add(new HTML("<pre class=\"prettyprint linenums pre-scrollable\">"
-        + SafeHtmlUtils.htmlEscape(CustomResources.RESOURCES.manFileText().getText()) + "</pre>"));
+    prettyCode = new HTML();
+    manSourceTab.add(prettyCode);
 
     textArea.setWidth("98%");
     textArea.setHeight("200px");
-    textArea.setText(CustomResources.RESOURCES.manFileText().getText());
+    textArea.setText("");
+    textArea
+        .setPlaceholder("Please paste text here, or import a file by clicking import button below.");
+    // textArea.setText(CustomResources.RESOURCES.manFileText().getText());
     textArea.addDragStartHandler(new DragStartHandler() {
 
       @Override
@@ -277,6 +282,11 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
     });
   }
+
+  public native void prettyPrint() /*-{
+		$wnd.prettyPrint();
+		prettyPrint();
+  }-*/;
 
   public native void injectJsAndJsniBinding(CSVEditor editor) /*-{
 		$wnd.updateDataGrid = function(text, a, b) {
@@ -846,6 +856,9 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       browseFileModal.hide();
       textArea.setText(fileContent);
       parse.setEnabled(true);
+      prettyCode.setHTML("<pre class=\"prettyprint linenums pre-scrollable\">"
+          + SafeHtmlUtils.htmlEscape(fileContent) + "</pre>");
+      prettyPrint();
     } else {
       uploadAlert.setVisible(true);
       uploadAlert.setHeading("Error");
