@@ -122,9 +122,6 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @UiField(provided = true)
   ValueListBox<PType> type;
 
-  // @UiField
-  Pagination pagination = new Pagination();
-
   @UiField
   Pagination dataGridPagination;
 
@@ -626,7 +623,9 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       return;
     }
 
-    NavLink prev = new NavLink("<");
+    final NavLink prev = new NavLink("<");
+    final NavLink next = new NavLink(">");
+    final ArrayList<NavLink> pageNavs = new ArrayList<NavLink>();
 
     prev.addClickHandler(new ClickHandler() {
 
@@ -634,6 +633,12 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       public void onClick(ClickEvent event) {
         GWT.log(String.valueOf("prev"));
         pager.previousPage();
+        for (int i = 0; i < pageNavs.size(); i++) {
+          pageNavs.get(i).setActive(false);
+        }
+        pageNavs.get(pager.getPage()).setActive(true);
+        prev.setDisabled(!pager.hasPreviousPage());
+        next.setDisabled(!pager.hasNextPage());
       }
     });
 
@@ -662,24 +667,28 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
       final int index = i + 1;
 
-      NavLink page = new NavLink(String.valueOf(index));
+      final NavLink page = new NavLink(String.valueOf(index));
 
       page.addClickHandler(new ClickHandler() {
 
         @Override
         public void onClick(ClickEvent event) {
           pager.setPage(index - 1);
+          for (int i = 0; i < pageNavs.size(); i++) {
+            pageNavs.get(i).setActive(false);
+          }
+          pageNavs.get(pager.getPage()).setActive(true);
+          prev.setDisabled(!pager.hasPreviousPage());
+          next.setDisabled(!pager.hasNextPage());
         }
       });
 
       if (i == pager.getPage()) {
         page.setActive(true);
       }
-
+      pageNavs.add(page);
       pagination.add(page);
     }
-
-    NavLink next = new NavLink(">");
 
     next.addClickHandler(new ClickHandler() {
 
@@ -687,6 +696,12 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       public void onClick(ClickEvent event) {
         GWT.log(String.valueOf("next"));
         pager.nextPage();
+        for (int i = 0; i < pageNavs.size(); i++) {
+          pageNavs.get(i).setActive(false);
+        }
+        pageNavs.get(pager.getPage()).setActive(true);
+        prev.setDisabled(!pager.hasPreviousPage());
+        next.setDisabled(!pager.hasNextPage());
       }
     });
 
@@ -754,7 +769,9 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   }
 
   @UiHandler("parse")
-  void onAddClick(ClickEvent event) {
+  void onParseClick(ClickEvent event) {
+    this.dataProvider.getList().clear();
+    rebuildPager(dataGridPagination, dataGridPager);
     parse();
   }
 
