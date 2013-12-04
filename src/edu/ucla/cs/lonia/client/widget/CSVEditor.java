@@ -283,9 +283,18 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     });
   }
 
-  public native void prettyPrint() /*-{
+  public native void JsPrettyPrint() /*-{
 		$wnd.prettyPrint();
 		prettyPrint();
+  }-*/;
+
+  public native void JsExportCsvFile(String text, String ext) /*-{
+		var a = document.createElement('a');
+		a.href = 'data:attachment/' + ext + "," + encodeURIComponent(text);
+		a.target = '_blank';
+		a.download = 'result.' + ext;
+		document.body.appendChild(a);
+		a.click();
   }-*/;
 
   public native void injectJsAndJsniBinding(CSVEditor editor) /*-{
@@ -858,7 +867,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       parse.setEnabled(true);
       prettyCode.setHTML("<pre class=\"prettyprint linenums pre-scrollable\">"
           + SafeHtmlUtils.htmlEscape(fileContent) + "</pre>");
-      prettyPrint();
+      JsPrettyPrint();
     } else {
       uploadAlert.setVisible(true);
       uploadAlert.setHeading("Error");
@@ -870,6 +879,30 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   public void onCancelUploadClick(ClickEvent e) {
     submitFileForm.reset();
     browseFileModal.hide();
+  }
+
+  @UiHandler("exportBtn")
+  public void onExportClick(ClickEvent e) {
+    exportFile("csv");
+  }
+
+  @UiHandler("exportCSV")
+  public void onExportCSVClick(ClickEvent e) {
+    exportFile("csv");
+  }
+
+  @UiHandler("exportTXT")
+  public void onExportTXTClick(ClickEvent e) {
+    exportFile("txt");
+  }
+
+  private void exportFile(String ext) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < dataProvider.getList().size(); i++) {
+      Parameter para = dataProvider.getList().get(i);
+      sb.append(para.getCsvRow() + "\n");
+    }
+    JsExportCsvFile(sb.toString(), ext);
   }
 
   public boolean flag = false;

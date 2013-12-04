@@ -9,9 +9,9 @@ public class Parameter {
   private String name;
 
   private PType type;
-  
+
   private Boolean isRequired;
-  
+
   public Boolean getIsRequired() {
     return isRequired;
   }
@@ -37,7 +37,7 @@ public class Parameter {
   }
 
   private String prefix;
-  
+
   private Integer cardinality;
 
   public PType getType() {
@@ -82,8 +82,24 @@ public class Parameter {
     this.state = state;
   }
 
-  public Parameter() {
+  private String CsvFormat(String text) {
+    return text.replace(",", ";");
+  }
 
+  public String getCsvRow() {
+    return CsvFormat(name) + "," + CsvFormat(description) + "," + CsvFormat(type.getDisplayLabel())
+        + "," + CsvFormat(state.getDisplayLabel()) + "," + CsvFormat(prefix) + ","
+        + CsvFormat(cardinality.toString()) + "," + CsvFormat(isRequired.toString());
+  }
+
+  public Parameter() {
+    name = "";
+    description = "";
+    type = PType.NONE;
+    state = State.DISABLED;
+    prefix = "";
+    cardinality = 0;
+    isRequired = false;
   }
 
   public Parameter(Integer id, String userName, String age, State choice, PType type) {

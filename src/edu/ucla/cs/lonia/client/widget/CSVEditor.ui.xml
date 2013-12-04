@@ -68,8 +68,8 @@
 						</b:DropdownButton>
 						<b:SplitDropdownButton ui:field="exportBtn"
 							text="Export">
-							<b:NavLink>To *.csv (default)</b:NavLink>
-							<b:NavLink>To *.txt</b:NavLink>
+							<b:NavLink ui:field="exportCSV">To *.csv (default)</b:NavLink>
+							<b:NavLink ui:field="exportTXT">To *.txt</b:NavLink>
 						</b:SplitDropdownButton>
 						<!-- <b:Button type="WARNING" ui:field="sendToServer">Send To Server 
 							Test</b:Button> -->
