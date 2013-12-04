@@ -56,6 +56,7 @@
 				<b:Column size="6">
 					<b:ButtonToolbar>
 						<b:ButtonGroup>
+							<b:Button type="SUCCESS" ui:field="addRow">Add</b:Button>
 							<b:Button type="PRIMARY" ui:field="editRow">Edit</b:Button>
 							<b:Button type="DANGER" ui:field="deleteRow">Detele</b:Button>
 							<!-- <b:Button>3</b:Button> -->
@@ -65,11 +66,13 @@
 							<b:NavLink ui:field="browseFile">Browse File</b:NavLink>
 							<!-- <b:NavLink>From Other Sources</b:NavLink> -->
 						</b:DropdownButton>
-						<b:SplitDropdownButton text="Export">
+						<b:SplitDropdownButton ui:field="exportBtn"
+							text="Export">
 							<b:NavLink>To *.csv (default)</b:NavLink>
 							<b:NavLink>To *.txt</b:NavLink>
 						</b:SplitDropdownButton>
-						<b:Button type="WARNING" ui:field="sendToServer">Send To Server Test</b:Button> 
+						<!-- <b:Button type="WARNING" ui:field="sendToServer">Send To Server 
+							Test</b:Button> -->
 					</b:ButtonToolbar>
 				</b:Column>
 				<b:Column size="6">

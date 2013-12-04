@@ -17,6 +17,7 @@ import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.Pagination;
 import com.github.gwtbootstrap.client.ui.Paragraph;
+import com.github.gwtbootstrap.client.ui.SplitDropdownButton;
 import com.github.gwtbootstrap.client.ui.SubmitButton;
 import com.github.gwtbootstrap.client.ui.Tab;
 import com.github.gwtbootstrap.client.ui.TextArea;
@@ -161,11 +162,18 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
   @UiField
   @Editor.Ignore
+  Button addRow;
+
+  @UiField
+  @Editor.Ignore
   Button editRow;
 
   @UiField
   @Editor.Ignore
   Button deleteRow;
+  @UiField
+  @Editor.Ignore
+  SplitDropdownButton exportBtn;
 
   @UiField
   @Editor.Ignore
@@ -229,6 +237,11 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     state.setAcceptableValues(Arrays.asList(State.values()));
 
     initTable(csvDataGrid, dataGridPager, dataGridPagination);
+
+    parse.setEnabled(false);
+    addRow.setEnabled(false);
+    deleteRow.setEnabled(false);
+    editRow.setEnabled(false);
 
     manSourceTab.add(new HTML("<pre class=\"prettyprint linenums pre-scrollable\">"
         + SafeHtmlUtils.htmlEscape(CustomResources.RESOURCES.manFileText().getText()) + "</pre>"));
@@ -580,15 +593,14 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     boolean hasError = false;
 
     if (para.getName() == null || para.getName().isEmpty()) {
-
       nameControlGroup.setType(ControlGroupType.ERROR);
-      nameHelpInline.setText("paraName should be input");
+      nameHelpInline.setText("Name should not be empty");
       hasError = true;
     }
 
     if (para.getDescription() == null) {
       descriptionControlGroup.setType(ControlGroupType.ERROR);
-      descriptionHelpInline.setText("input a number for test.");
+      descriptionHelpInline.setText("Description should not be empty");
       hasError = true;
     }
 
@@ -760,9 +772,23 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     editModal.hide();
   }
 
+  @UiHandler("addRow")
+  void onClickAddRow(ClickEvent event) {
+  }
+
   @UiHandler("editRow")
   void onClickEditRow(ClickEvent event) {
-    editModal.show();
+    if (selectionModel != null) {
+      Parameter para = selectionModel.getSelectedObject();
+      if (para != null) {
+        CSVEditor.this.driver.edit(para);
+        editModal.show();
+      } else {
+        Window.alert("Please select a row !");
+      }
+    } else {
+      Window.alert("Please select a row !");
+    }
   }
 
   @UiHandler("deleteRow")
@@ -775,6 +801,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         dataProvider.flush();
         dataProvider.refresh();
         rebuildPager(dataGridPagination, dataGridPager);
+      } else {
+        Window.alert("Please select a row !");
       }
     } else {
       Window.alert("Please select a row !");
@@ -793,13 +821,13 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     parse();
   }
 
-  @UiHandler("sendToServer")
-  void onSendClick(ClickEvent event) {
-    ParseResult pr = new ParseResult();
-    pr.setKey(this.textArea.getText());
-    pr.setValue(null);
-    sendResultToServer(pr);
-  }
+  // @UiHandler("sendToServer")
+  // void onSendClick(ClickEvent event) {
+  // ParseResult pr = new ParseResult();
+  // pr.setKey(this.textArea.getText());
+  // pr.setValue(null);
+  // sendResultToServer(pr);
+  // }
 
   @UiHandler("browseFile")
   void onBrowseClick(ClickEvent event) {
@@ -817,6 +845,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     if (name.length() != 0 && fileContent != null) {
       browseFileModal.hide();
       textArea.setText(fileContent);
+      parse.setEnabled(true);
     } else {
       uploadAlert.setVisible(true);
       uploadAlert.setHeading("Error");
@@ -858,6 +887,12 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         p.setIsRequired(row.getRequire());
         addParameter(p);
       }
+      if (result.size() == 0) {
+        Window.alert("Sorry, parsing is failed, please edit manually.");
+      }
+      addRow.setEnabled(true);
+      deleteRow.setEnabled(true);
+      editRow.setEnabled(true);
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
