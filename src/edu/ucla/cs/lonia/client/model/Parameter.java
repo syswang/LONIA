@@ -1,4 +1,6 @@
-package edu.ucla.cs.lonia.client.util;
+package edu.ucla.cs.lonia.client.model;
+
+import edu.ucla.cs.lonia.client.util.HasDisplayLabel;
 
 public class Parameter {
 
@@ -11,6 +13,22 @@ public class Parameter {
   private PType type;
 
   private Boolean isRequired;
+
+  private String prefix;
+
+  private Integer cardinality;
+
+  private State state;
+
+  public Parameter() {
+    name = "";
+    description = "";
+    type = PType.NONE;
+    state = State.DISABLED;
+    prefix = "";
+    cardinality = 0;
+    isRequired = false;
+  }
 
   public Boolean getIsRequired() {
     return isRequired;
@@ -36,10 +54,6 @@ public class Parameter {
     this.cardinality = cardinality;
   }
 
-  private String prefix;
-
-  private Integer cardinality;
-
   public PType getType() {
     return type;
   }
@@ -47,8 +61,6 @@ public class Parameter {
   public void setType(PType type) {
     this.type = type;
   }
-
-  private State state = State.DISABLED;
 
   public Integer getId() {
     return id;
@@ -90,24 +102,6 @@ public class Parameter {
     return CsvFormat(name) + "," + CsvFormat(description) + "," + CsvFormat(type.getDisplayLabel())
         + "," + CsvFormat(state.getDisplayLabel()) + "," + CsvFormat(prefix) + ","
         + CsvFormat(cardinality.toString()) + "," + CsvFormat(isRequired.toString());
-  }
-
-  public Parameter() {
-    name = "";
-    description = "";
-    type = PType.NONE;
-    state = State.DISABLED;
-    prefix = "";
-    cardinality = 0;
-    isRequired = false;
-  }
-
-  public Parameter(Integer id, String userName, String age, State choice, PType type) {
-    this.id = id;
-    this.name = userName;
-    this.description = age;
-    this.state = choice;
-    this.type = type;
   }
 
   public enum State implements HasDisplayLabel {

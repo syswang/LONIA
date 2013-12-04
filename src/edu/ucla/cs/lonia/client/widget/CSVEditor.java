@@ -66,13 +66,13 @@ import edu.ucla.cs.lonia.client.GreetingService;
 import edu.ucla.cs.lonia.client.GreetingServiceAsync;
 import edu.ucla.cs.lonia.client.model.CustomSelectionCell;
 import edu.ucla.cs.lonia.client.model.DroppableEditTextCell;
+import edu.ucla.cs.lonia.client.model.Parameter;
 import edu.ucla.cs.lonia.client.model.ParseResult;
+import edu.ucla.cs.lonia.client.model.Parameter.PType;
+import edu.ucla.cs.lonia.client.model.Parameter.State;
 import edu.ucla.cs.lonia.client.parser.ManuFileParser;
 import edu.ucla.cs.lonia.client.parser.ResultRow;
 import edu.ucla.cs.lonia.client.util.DisplayLabelRenderer;
-import edu.ucla.cs.lonia.client.util.Parameter;
-import edu.ucla.cs.lonia.client.util.Parameter.PType;
-import edu.ucla.cs.lonia.client.util.Parameter.State;
 
 public class CSVEditor extends Composite implements Editor<Parameter> {
 
