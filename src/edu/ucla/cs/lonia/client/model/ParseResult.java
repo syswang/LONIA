@@ -1,26 +1,26 @@
 package edu.ucla.cs.lonia.client.model;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+public class ParseResult implements Serializable {
 
-import edu.ucla.cs.lonia.client.parser.ResultRow;
-
-public class ParseResult implements IsSerializable{
+  private static final long serialVersionUID = -2766763063117600511L;
   private String key;
-  private ArrayList<ResultRow> value;
-  
+  private String value;
+
   public String getKey() {
     return key;
   }
+
   public void setKey(String key) {
     this.key = key;
   }
-  public ArrayList<ResultRow> getValue() {
+
+  public String getValue() {
     return value;
   }
 
-  public void setValue(ArrayList<ResultRow> value) {
+  public void setValue(String value) {
     this.value = value;
   }
 }

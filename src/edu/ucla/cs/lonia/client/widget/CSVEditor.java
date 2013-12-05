@@ -194,6 +194,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @UiField
   @Editor.Ignore
   SubmitButton uploadFile;
+  
+  ArrayList<Parameter> server_paras = new ArrayList<Parameter>();
 
   String ext = null;
 
@@ -202,6 +204,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   String fileContent = null;
 
   SimplePager dataGridPager = new SimplePager();
+
+  ArrayList<ResultRow> result = null;
 
   @Editor.Ignore
   HTML prettyCode = null;
@@ -847,14 +851,6 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     parse();
   }
 
-  // @UiHandler("sendToServer")
-  // void onSendClick(ClickEvent event) {
-  // ParseResult pr = new ParseResult();
-  // pr.setKey(this.textArea.getText());
-  // pr.setValue(null);
-  // sendResultToServer(pr);
-  // }
-
   @UiHandler("browseFile")
   void onBrowseClick(ClickEvent event) {
     browseFileModal.show();
@@ -914,7 +910,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     if (shareResult.isChecked()) {
       ParseResult pr = new ParseResult();
       pr.setKey(this.textArea.getText());
-      pr.setValue(null);
+      pr.setValue(getCsv());
       sendResultToServer(pr);
     }
     exportFile(ext);
@@ -925,25 +921,24 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   public void onCancelExportClick(ClickEvent e) {
     exportFileModal.hide();
   }
-
-  private void exportFile(String ext) {
+  
+  private String getCsv() {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < dataProvider.getList().size(); i++) {
       Parameter para = dataProvider.getList().get(i);
       sb.append(para.getCsvRow() + "\n");
     }
-    JsExportCsvFile(sb.toString(), ext);
+    return sb.toString();
   }
 
-  public boolean flag = false;
+  private void exportFile(String ext) {
+    JsExportCsvFile(getCsv(), ext);
+  }
 
   void parse() {
     try {
-      if (flag == true) {
-        return;
-      }
       BasicParser parser = ParserFactory.getInstance().createParser("manuParser");
-      ArrayList<ResultRow> result = parser.parse(this.textArea.getText());
+      result = parser.parse(this.textArea.getText());
       for (int i = 0; i < result.size(); i++) {
         ResultRow row = result.get(i);
         Parameter p = new Parameter();
@@ -970,33 +965,28 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       deleteRow.setEnabled(true);
       editRow.setEnabled(true);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
   private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
 
-  // void sendResultToServer(String textToServer) {
   private void sendResultToServer(ParseResult result) {
-    // First, we validate the input.
-
-    // Then, we send the input to the server.
-
     greetingService.sendToServer(result, new AsyncCallback<ParseResult>() {
       public void onFailure(Throwable caught) {
-        // print something to report failure
         Window.alert("Failed sending result to server");
       }
 
       public void onSuccess(ParseResult result) {
-        // print something to report success
         if (result.getValue() == null) {
           Window.alert("Succeeded sending result to server: null");
-          flag = false;
         } else {
-          Window.alert("Succeeded sending result to server: done");
-          flag = true;
+          //Window.alert("Succeeded sending result to server: " + result.getValue());
+          String[] lines = result.getValue().split("\n");
+          for (String line : lines) {
+            Parameter para = Parameter.parseFromCsvRow(line);
+            server_paras.add(para);
+          }
         }
       }
     });

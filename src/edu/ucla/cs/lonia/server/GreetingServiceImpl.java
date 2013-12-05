@@ -1,6 +1,5 @@
 package edu.ucla.cs.lonia.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +7,6 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import edu.ucla.cs.lonia.client.GreetingService;
 import edu.ucla.cs.lonia.client.model.ParseResult;
-import edu.ucla.cs.lonia.client.parser.ResultRow;
 import edu.ucla.cs.lonia.shared.FieldVerifier;
 
 /**
@@ -17,27 +15,16 @@ import edu.ucla.cs.lonia.shared.FieldVerifier;
 @SuppressWarnings("serial")
 public class GreetingServiceImpl extends RemoteServiceServlet implements GreetingService {
 
-  public Map<String, ArrayList<ResultRow>> prs = new HashMap<String, ArrayList<ResultRow>>();
+  public Map<String, String> prs = new HashMap<String, String>();
 
   public ParseResult sendToServer(ParseResult result) throws IllegalArgumentException {
-    // Entity pr = new Entity("ParseResult", result.getKey());
-    // pr.setProperty("result", result.getValue());
-    //
-    // DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    // datastore.put(pr);
-    //
-    // Query query = new Query(result.getKey());
-    //
-    // Entity data = datastore.prepare(query).asSingleEntity();
-    // ParseResult rst = (ParseResult) data.getProperty("ParseResult");
-    // return rst;
     if (result.getValue() == null) {
-      // TODO get parsed result by key
+      // get parsed result by key
       if (prs.get(result.getKey()) != null) {
         result.setValue(prs.get(result.getKey()));
       }
     } else {
-      // TODO put parsed result
+      // put parsed result
       prs.put(result.getKey(), result.getValue());
     }
     return result;
