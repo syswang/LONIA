@@ -180,27 +180,25 @@
 				<b:Button ui:field="cancelExport">Cancel</b:Button>
 			</b:ModalFooter>
 		</b:Modal>
-		<!-- <b:Modal ui:field="fecthedModal" title="Export File"
-            backdrop="STATIC" closeVisible="true" keyboard="true" animation="true">
-            <b:Fieldset>
-                <b:Paragraph>
-                </b:Paragraph>
-                <b:CheckBox ui:field="shareResult">Share this parsed result with other
-                    users</b:CheckBox>
-                <b:AlertBlock type="INFO">
-                    <b:Paragraph>
-                        Notice, to share the result to other users, the
-                        content in text area and table will be uploaded
-                        to server. Please
-                        make
-                        sure not include any private data in them.
-                    </b:Paragraph>
-                </b:AlertBlock>
-            </b:Fieldset>
-            <b:ModalFooter>
-                <b:SubmitButton type="PRIMARY" ui:field="confirmExport">Confirm</b:SubmitButton>
-                <b:Button ui:field="cancelExport">Cancel</b:Button>
-            </b:ModalFooter>
-        </b:Modal> -->
+		<b:Modal ui:field="serverResultModal" title="Available Result on Server"
+			backdrop="STATIC" closeVisible="true" keyboard="true" animation="true">
+			<b:Fieldset>
+				<b:Paragraph>
+				</b:Paragraph>
+				<b:AlertBlock type="INFO">
+					<b:Paragraph>
+						Notice, to share the result to other users, the
+						content in text area and table will be uploaded
+						to server. Please
+						make
+						sure not include any private data in them.
+					</b:Paragraph>
+				</b:AlertBlock>
+			</b:Fieldset>
+			<b:ModalFooter>
+				<b:SubmitButton type="PRIMARY" ui:field="confirmServerResult">Confirm</b:SubmitButton>
+				<b:Button ui:field="cancelServerResult">Cancel</b:Button>
+			</b:ModalFooter>
+		</b:Modal>
 	</g:HTMLPanel>
 </ui:UiBinder>

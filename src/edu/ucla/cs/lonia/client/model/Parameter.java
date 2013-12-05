@@ -139,24 +139,25 @@ public class Parameter {
     Parameter para = new Parameter();
     para.setName(words[0]);
     para.setDescription(words[1]);
-    
-    State state = State.DISABLED;
-    try {
-      state = State.valueOf(words[2].toUpperCase());
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      para.setState(state);
-    }
-    
+
     PType type = PType.NONE;
     try {
-      type = PType.valueOf(words[3].toUpperCase());
+      type = PType.valueOf(words[2].toUpperCase());
     } catch (Exception e) {
       e.printStackTrace();
     } finally {
       para.setType(type);
     }
+
+    State state = State.DISABLED;
+    try {
+      state = State.valueOf(words[3].toUpperCase());
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      para.setState(state);
+    }
+
     para.setPrefix(words[4]);
     para.setCardinality(Integer.parseInt(words[5]));
     para.setIsRequired(Boolean.parseBoolean(words[6]));

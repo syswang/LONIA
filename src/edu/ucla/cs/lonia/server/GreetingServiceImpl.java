@@ -20,12 +20,11 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
   public ParseResult sendToServer(ParseResult result) throws IllegalArgumentException {
     if (result.getValue() == null) {
       // get parsed result by key
-      if (prs.get(result.getKey()) != null) {
-        result.setValue(prs.get(result.getKey()));
-      }
+      result.setValue(prs.get(result.getKey()));
     } else {
       // put parsed result
       prs.put(result.getKey(), result.getValue());
+      return null;
     }
     return result;
   }

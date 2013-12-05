@@ -147,6 +147,9 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   Modal exportFileModal;
 
   @UiField
+  Modal serverResultModal;
+
+  @UiField
   Tab manSourceTab;
 
   @UiField
@@ -194,7 +197,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @UiField
   @Editor.Ignore
   SubmitButton uploadFile;
-  
+
   ArrayList<Parameter> server_paras = new ArrayList<Parameter>();
 
   String ext = null;
@@ -205,7 +208,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
   SimplePager dataGridPager = new SimplePager();
 
-  ArrayList<ResultRow> result = null;
+  ArrayList<ResultRow> resultRows = null;
 
   @Editor.Ignore
   HTML prettyCode = null;
@@ -296,7 +299,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
   public native void JsPrettyPrint() /*-{
 		$wnd.prettyPrint();
-		prettyPrint();
+		//prettyPrint();
   }-*/;
 
   public native void JsExportCsvFile(String text, String ext) /*-{
@@ -921,7 +924,17 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   public void onCancelExportClick(ClickEvent e) {
     exportFileModal.hide();
   }
-  
+
+  @UiHandler("confirmServerResult")
+  public void onConfirmServerResultClick(ClickEvent e) {
+    serverResultModal.hide();
+    this.dataProvider.getList().clear();
+    rebuildPager(dataGridPagination, dataGridPager);
+    for (int i = 0; i < server_paras.size(); i++) {
+      addParameter(server_paras.get(i));
+    }
+  }
+
   private String getCsv() {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < dataProvider.getList().size(); i++) {
@@ -936,11 +949,12 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   }
 
   void parse() {
+    checkServer();
     try {
       BasicParser parser = ParserFactory.getInstance().createParser("manuParser");
-      result = parser.parse(this.textArea.getText());
-      for (int i = 0; i < result.size(); i++) {
-        ResultRow row = result.get(i);
+      resultRows = parser.parse(this.textArea.getText());
+      for (int i = 0; i < resultRows.size(); i++) {
+        ResultRow row = resultRows.get(i);
         Parameter p = new Parameter();
         p.setDescription(row.getDescription());
         State state = row.getState() ? State.ENABLED : State.DISABLED;
@@ -958,7 +972,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         p.setIsRequired(row.getRequire());
         addParameter(p);
       }
-      if (result.size() == 0) {
+      if (resultRows.size() == 0) {
         Window.alert("Sorry, parsing is failed, please edit manually.");
       }
       addRow.setEnabled(true);
@@ -971,21 +985,39 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
   private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
 
-  private void sendResultToServer(ParseResult result) {
-    greetingService.sendToServer(result, new AsyncCallback<ParseResult>() {
+  private void sendResultToServer(ParseResult pr) {
+    greetingService.sendToServer(pr, new AsyncCallback<ParseResult>() {
       public void onFailure(Throwable caught) {
         Window.alert("Failed sending result to server");
       }
 
-      public void onSuccess(ParseResult result) {
-        if (result.getValue() == null) {
-          Window.alert("Succeeded sending result to server: null");
+      public void onSuccess(ParseResult pr) {
+        Window.alert("Succeeded sending result to server: done");
+      }
+    });
+  }
+
+  private void checkServer() {
+    ParseResult pr = new ParseResult();
+    pr.setKey(this.textArea.getText());
+    pr.setValue(null);
+    greetingService.sendToServer(pr, new AsyncCallback<ParseResult>() {
+      public void onFailure(Throwable caught) {
+        Window.alert("Failed sending result to server");
+      }
+
+      public void onSuccess(ParseResult pr) {
+        if (pr.getValue() == null) {
+          Window.alert("No available results on server :(");
         } else {
-          //Window.alert("Succeeded sending result to server: " + result.getValue());
-          String[] lines = result.getValue().split("\n");
+          // Window.alert("Succeeded sending result to server: " + result.getValue());
+          String[] lines = pr.getValue().split("\n");
           for (String line : lines) {
             Parameter para = Parameter.parseFromCsvRow(line);
             server_paras.add(para);
+          }
+          if (server_paras != null && server_paras.size() > 0) {
+            serverResultModal.show();
           }
         }
       }
