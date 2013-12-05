@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.github.gwtbootstrap.client.ui.AlertBlock;
 import com.github.gwtbootstrap.client.ui.Button;
+import com.github.gwtbootstrap.client.ui.CheckBox;
 import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.FileUpload;
@@ -67,11 +68,10 @@ import edu.ucla.cs.lonia.client.GreetingServiceAsync;
 import edu.ucla.cs.lonia.client.model.CustomSelectionCell;
 import edu.ucla.cs.lonia.client.model.DroppableEditTextCell;
 import edu.ucla.cs.lonia.client.model.Parameter;
-import edu.ucla.cs.lonia.client.model.ParseResult;
 import edu.ucla.cs.lonia.client.model.Parameter.PType;
 import edu.ucla.cs.lonia.client.model.Parameter.State;
+import edu.ucla.cs.lonia.client.model.ParseResult;
 import edu.ucla.cs.lonia.client.parser.BasicParser;
-import edu.ucla.cs.lonia.client.parser.ManuFileParser;
 import edu.ucla.cs.lonia.client.parser.ParserFactory;
 import edu.ucla.cs.lonia.client.parser.ResultRow;
 import edu.ucla.cs.lonia.client.util.DisplayLabelRenderer;
@@ -134,10 +134,17 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   Form submitFileForm;
 
   @UiField
+  @Editor.Ignore
+  CheckBox shareResult;
+
+  @UiField
   Modal editModal;
 
   @UiField
   Modal browseFileModal;
+
+  @UiField
+  Modal exportFileModal;
 
   @UiField
   Tab manSourceTab;
@@ -156,7 +163,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
   @UiField
   com.github.gwtbootstrap.client.ui.Column mainPanel;
-  
+
   @UiField
   @Editor.Ignore
   Button addRow;
@@ -187,6 +194,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @UiField
   @Editor.Ignore
   SubmitButton uploadFile;
+
+  String ext = null;
 
   AlertBlock ab = null;
 
@@ -881,17 +890,40 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
   @UiHandler("exportBtn")
   public void onExportClick(ClickEvent e) {
-    exportFile("csv");
+    ext = "csv";
+    shareResult.setChecked(true);
+    exportFileModal.show();
   }
 
   @UiHandler("exportCSV")
   public void onExportCSVClick(ClickEvent e) {
-    exportFile("csv");
+    ext = "csv";
+    shareResult.setChecked(true);
+    exportFileModal.show();
   }
 
   @UiHandler("exportTXT")
   public void onExportTXTClick(ClickEvent e) {
-    exportFile("txt");
+    ext = "txt";
+    shareResult.setChecked(true);
+    exportFileModal.show();
+  }
+
+  @UiHandler("confirmExport")
+  public void onConfirmExportClick(ClickEvent e) {
+    if (shareResult.isChecked()) {
+      ParseResult pr = new ParseResult();
+      pr.setKey(this.textArea.getText());
+      pr.setValue(null);
+      sendResultToServer(pr);
+    }
+    exportFile(ext);
+    exportFileModal.hide();
+  }
+
+  @UiHandler("cancelExport")
+  public void onCancelExportClick(ClickEvent e) {
+    exportFileModal.hide();
   }
 
   private void exportFile(String ext) {
@@ -906,12 +938,11 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   public boolean flag = false;
 
   void parse() {
-    StringBuffer in = new StringBuffer();
     try {
       if (flag == true) {
         return;
       }
-      BasicParser parser = ParserFactory.getInstance().createParser("manuParser");  
+      BasicParser parser = ParserFactory.getInstance().createParser("manuParser");
       ArrayList<ResultRow> result = parser.parse(this.textArea.getText());
       for (int i = 0; i < result.size(); i++) {
         ResultRow row = result.get(i);
