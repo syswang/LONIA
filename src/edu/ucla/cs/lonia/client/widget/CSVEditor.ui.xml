@@ -108,7 +108,10 @@
 						</b:Controls>
 					</b:ControlGroup>
 					<b:ControlGroup ui:field="descriptionControlGroup">
-						<b:ControlLabel for="description">Description</b:ControlLabel>
+						<b:ControlLabel for="description">
+							<font color="red">*</font>
+							Description
+						</b:ControlLabel>
 						<b:Controls>
 							<b:TextBox b:id="description" ui:field="description"
 								placeholder="input parameter description" />
@@ -116,18 +119,56 @@
 						</b:Controls>
 					</b:ControlGroup>
 					<b:ControlGroup ui:field="typeControlGroup">
-						<b:ControlLabel for="type">Select Type</b:ControlLabel>
+						<b:ControlLabel for="type">
+							<font color="red">*</font>
+							Select Type
+						</b:ControlLabel>
 						<b:Controls>
 							<b:ValueListBox b:id="type" ui:field="type" />
 							<b:HelpInline></b:HelpInline>
 						</b:Controls>
 					</b:ControlGroup>
 					<b:ControlGroup ui:field="stateNameControlGroup">
-						<b:ControlLabel for="state">Select
-							State</b:ControlLabel>
+						<b:ControlLabel for="state">
+							<font color="red">*</font>
+							Select
+							State
+						</b:ControlLabel>
 						<b:Controls>
 							<b:ValueListBox b:id="state" ui:field="state" />
 							<b:HelpInline></b:HelpInline>
+						</b:Controls>
+					</b:ControlGroup>
+					<b:ControlGroup ui:field="prefixControlGroup">
+						<b:ControlLabel for="prefix">
+							<font color="red">*</font>
+							Prefix
+						</b:ControlLabel>
+						<b:Controls>
+							<b:TextBox b:id="prefix" ui:field="prefix"
+								placeholder="input parameter prefix" />
+							<b:HelpInline ui:field="prefixHelpInline" />
+						</b:Controls>
+					</b:ControlGroup>
+					<b:ControlGroup ui:field="cardinalityControlGroup">
+						<b:ControlLabel for="cardinality">
+							<font color="red">*</font>
+							Cardinality
+						</b:ControlLabel>
+						<b:Controls>
+							<b:IntegerBox b:id="cardinality" ui:field="cardinality"
+								placeholder="input parameter cardinality" />
+							<b:HelpInline ui:field="cardinalityHelpInline" />
+						</b:Controls>
+					</b:ControlGroup>
+					<b:ControlGroup ui:field="isRequiredControlGroup">
+						<b:ControlLabel for="isRequired">
+							<font color="red">*</font>
+							Required
+						</b:ControlLabel>
+						<b:Controls>
+							<b:CheckBox b:id="isRequired" ui:field="isRequired" />
+							<b:HelpInline />
 						</b:Controls>
 					</b:ControlGroup>
 				</b:Fieldset>

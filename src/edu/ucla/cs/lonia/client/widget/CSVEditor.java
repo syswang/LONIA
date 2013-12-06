@@ -16,6 +16,7 @@ import com.github.gwtbootstrap.client.ui.Form;
 import com.github.gwtbootstrap.client.ui.Form.SubmitEvent;
 import com.github.gwtbootstrap.client.ui.HelpInline;
 import com.github.gwtbootstrap.client.ui.Icon;
+import com.github.gwtbootstrap.client.ui.IntegerBox;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.Pagination;
@@ -37,16 +38,12 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.adapters.SimpleEditor;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DragEndEvent;
 import com.google.gwt.event.dom.client.DragEndHandler;
 import com.google.gwt.event.dom.client.DragStartEvent;
 import com.google.gwt.event.dom.client.DragStartHandler;
-import com.google.gwt.event.dom.client.KeyDownEvent;
-import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates.Template;
@@ -107,7 +104,30 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   TextBox description;
 
   @UiField
+  TextBox prefix;
+
+  @UiField
+  IntegerBox cardinality;
+
+  @UiField
+  CheckBox isRequired;
+
+  @UiField
   ControlGroup descriptionControlGroup;
+
+  @UiField
+  ControlGroup prefixControlGroup;
+
+  @UiField
+  @Editor.Ignore
+  HelpInline prefixHelpInline;
+
+  @UiField
+  ControlGroup cardinalityControlGroup;
+
+  @UiField
+  @Editor.Ignore
+  HelpInline cardinalityHelpInline;
 
   @UiField
   @Editor.Ignore
@@ -275,7 +295,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
     initTable(csvDataGrid, dataGridPager, dataGridPagination);
 
-    //parse.setEnabled(false);
+    // parse.setEnabled(false);
     addRow.setEnabled(false);
     deleteRow.setEnabled(false);
     editRow.setEnabled(false);
@@ -296,15 +316,15 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     textArea
         .setPlaceholder("Please paste text here, or import a file by clicking import button below.");
     // textArea.setText(CustomResources.RESOURCES.manFileText().getText());
-    textArea.addDragEndHandler(new DragEndHandler(){
+    textArea.addDragEndHandler(new DragEndHandler() {
 
       @Override
       public void onDragEnd(DragEndEvent event) {
         CSVEditor.this.getElement().removeChild(ab.getElement());
       }
-      
+
     });
-    
+
     textArea.addDragStartHandler(new DragStartHandler() {
 
       @Override
@@ -332,15 +352,15 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       }
 
     });
-//    textArea.addKeyDownHandler(new KeyDownHandler(){
-//
-//      @Override
-//      public void onKeyDown(KeyDownEvent event) {
-//        if (textArea.getSelectedText() != null && textArea.getSelectedText().length() > 0) {
-//          parse.setEnabled(true);
-//        }
-//      }
-//    });
+    // textArea.addKeyDownHandler(new KeyDownHandler(){
+    //
+    // @Override
+    // public void onKeyDown(KeyDownEvent event) {
+    // if (textArea.getSelectedText() != null && textArea.getSelectedText().length() > 0) {
+    // parse.setEnabled(true);
+    // }
+    // }
+    // });
 
   }
 
@@ -497,6 +517,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
           }
         }
         dataProvider.refresh();
+        rebuildPager(dataGridPagination, dataGridPager);
       }
     });
     ListHandler<Parameter> ptypeColumnHandler = new ListHandler<Parameter>(dataProvider.getList());
@@ -533,6 +554,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
           }
         }
         dataProvider.refresh();
+        rebuildPager(dataGridPagination, dataGridPager);
       }
     });
     ListHandler<Parameter> stateColumnHandler = new ListHandler<Parameter>(dataProvider.getList());
@@ -577,6 +599,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     csvTable.setColumnWidth(prefixColumn, 10, Unit.PCT);
     csvTable.addColumnSortHandler(prefixColHandler);
 
+    // Cardinality
     DroppableEditTextCell cardinCell = new DroppableEditTextCell(TableColumName.CARDINALITY);
 
     Column<Parameter, String> cardinColumn = new Column<Parameter, String>(cardinCell) {
@@ -625,7 +648,24 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
         };
     csvTable.addColumn(checkColumn, TableColumName.REQUIRED);
     csvTable.setColumnWidth(checkColumn, 10, Unit.PCT);
-    // csvTable.setSelectionEnabled(true);
+    checkColumn.setSortable(true);
+    ListHandler<Parameter> checkColHandler = new ListHandler<Parameter>(dataProvider.getList());
+    checkColHandler.setComparator(checkColumn, new Comparator<Parameter>() {
+      @Override
+      public int compare(Parameter o1, Parameter o2) {
+        return o1.getCardinality().compareTo(o2.getCardinality());
+      }
+    });
+    checkColumn.setFieldUpdater(new FieldUpdater<Parameter, Boolean>() {
+      @Override
+      public void update(int index, Parameter object, Boolean value) {
+        object.setIsRequired(value);
+        CSVEditor.this.driver.edit(object);
+        dataProvider.refresh();
+        rebuildPager(dataGridPagination, dataGridPager);
+      }
+    });
+    csvTable.addColumnSortHandler(checkColHandler);
 
     selectionModel = new SingleSelectionModel<Parameter>();
 
@@ -665,9 +705,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
   }
 
-  @UiHandler("submitExampleForm")
-  public void onSubmitForm(SubmitEvent e) {
-
+  private boolean testFormHasError() {
     Parameter para = driver.flush();
 
     boolean hasError = false;
@@ -684,10 +722,32 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       hasError = true;
     }
 
+    if (para.getPrefix() == null) {
+      prefixControlGroup.setType(ControlGroupType.ERROR);
+      prefixHelpInline.setText("Prefix should not be empty");
+      hasError = true;
+    }
+
+    if (para.getCardinality() == null) {
+      cardinalityControlGroup.setType(ControlGroupType.ERROR);
+      cardinalityHelpInline.setText("Cardinality should not be empty");
+      hasError = true;
+    }
+    
+    return hasError;
+  }
+
+  @UiHandler("submitExampleForm")
+  public void onSubmitForm(SubmitEvent e) {
+
+    boolean hasError = testFormHasError();
+
     if (hasError) {
       e.cancel();
       return;
     }
+
+    Parameter para = driver.flush();
 
     addParameter(para);
 
@@ -823,6 +883,11 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
     nameControlGroup.setType(ControlGroupType.NONE);
     nameHelpInline.setText("");
+
+    prefixControlGroup.setType(ControlGroupType.NONE);
+    prefixHelpInline.setText("");
+    cardinalityControlGroup.setType(ControlGroupType.NONE);
+    cardinalityHelpInline.setText("");
   }
 
   public void setUploadTextPreview(String text, String filename) {
@@ -891,7 +956,9 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
   @UiHandler("saveButton")
   void onClickSave(ClickEvent event) {
-    editModal.hide();
+    if (!testFormHasError()) {
+      editModal.hide();
+    }
   }
 
   @UiHandler("parse")
@@ -983,7 +1050,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     // checkServerBtn.setVisible(true);
     // checkServerBtn.setEnabled(true);
   }
-  
+
   @UiHandler("cancelServerResult")
   public void onCancelServerResultClick(ClickEvent e) {
     serverResultModal.hide();
@@ -1046,7 +1113,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       }
 
       public void onSuccess(ParseResult pr) {
-        //Window.alert("Succeeded sending result to server: done");
+        // Window.alert("Succeeded sending result to server: done");
         checkingServerText.setVisible(true);
         checkingServerText.setText("Result shared to server");
       }
