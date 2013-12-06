@@ -509,7 +509,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     Column<Parameter, String> stateColumn = new Column<Parameter, String>(stateCell) {
       @Override
       public String getValue(Parameter object) {
-        return object.getType().getDisplayLabel();
+        return object.getState().getDisplayLabel();
       }
     };
     stateColumn.setFieldUpdater(new FieldUpdater<Parameter, String>() {
