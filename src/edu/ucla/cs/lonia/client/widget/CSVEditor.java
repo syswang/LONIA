@@ -1035,7 +1035,9 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       }
 
       public void onSuccess(ParseResult pr) {
-        Window.alert("Succeeded sending result to server: done");
+        //Window.alert("Succeeded sending result to server: done");
+        checkingServerText.setVisible(true);
+        checkingServerText.setText("Result shared to server");
       }
     });
   }

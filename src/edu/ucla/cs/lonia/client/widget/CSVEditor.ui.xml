@@ -74,7 +74,7 @@
 				</b:Column>
 				<b:Column size="2">
 					<b:Icon type="ROTATE_RIGHT" spin="true" ui:field="checkingServer" />
-					<b:Code ui:field="checkingServerText">Undo</b:Code>
+					<b:Code ui:field="checkingServerText">Checking Server...</b:Code>
 					<b:Button type="WARNING" ui:field="checkServerBtn">Check Server</b:Button>
 				</b:Column>
 				<b:Column size="4">
@@ -191,7 +191,8 @@
 				</b:Paragraph>
 				<b:AlertBlock type="INFO">
 					<b:Paragraph>
-						We've detected there is a available parsing result for your input
+						We've detected there is an available parsing result based on your
+						input
 						file. Click
 						<b:Code>Confirm</b:Code>
 						button to replace current automatically parsed result.
