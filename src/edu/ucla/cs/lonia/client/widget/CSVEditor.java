@@ -41,6 +41,8 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DragEndEvent;
+import com.google.gwt.event.dom.client.DragEndHandler;
 import com.google.gwt.event.dom.client.DragStartEvent;
 import com.google.gwt.event.dom.client.DragStartHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -294,6 +296,15 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     textArea
         .setPlaceholder("Please paste text here, or import a file by clicking import button below.");
     // textArea.setText(CustomResources.RESOURCES.manFileText().getText());
+    textArea.addDragEndHandler(new DragEndHandler(){
+
+      @Override
+      public void onDragEnd(DragEndEvent event) {
+        CSVEditor.this.getElement().removeChild(ab.getElement());
+      }
+      
+    });
+    
     textArea.addDragStartHandler(new DragStartHandler() {
 
       @Override
@@ -309,8 +320,8 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
           ab.getElement().getStyle().setFontSize(20, Unit.PX);
           ab.getElement().getStyle().setWidth(100, Unit.PX);
           ab.getElement().getStyle().setHeight(25, Unit.PX);
-          CSVEditor.this.getElement().appendChild(ab.getElement());
         }
+        CSVEditor.this.getElement().appendChild(ab.getElement());
         String text = textArea.getSelectedText();
         if (text.length() > 20) {
           text = text.substring(0, 20) + "...";
