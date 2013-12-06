@@ -69,11 +69,15 @@
 							<b:NavLink ui:field="exportCSV">To *.csv (default)</b:NavLink>
 							<b:NavLink ui:field="exportTXT">To *.txt</b:NavLink>
 						</b:SplitDropdownButton>
-						<!-- <b:Button type="WARNING" ui:field="sendToServer">Send To Server 
-							Test</b:Button> -->
 					</b:ButtonToolbar>
+					<!-- <b:Icon type="ROTATE_RIGHT" spin="true" /> -->
 				</b:Column>
-				<b:Column size="6">
+				<b:Column size="2">
+					<b:Icon type="ROTATE_RIGHT" spin="true" ui:field="checkingServer" />
+					<b:Code ui:field="checkingServerText">Undo</b:Code>
+					<b:Button type="WARNING" ui:field="checkServerBtn">Check Server</b:Button>
+				</b:Column>
+				<b:Column size="4">
 					<b:Pagination ui:field="dataGridPagination" alignment="right" />
 				</b:Column>
 			</b:FluidRow>
@@ -187,11 +191,10 @@
 				</b:Paragraph>
 				<b:AlertBlock type="INFO">
 					<b:Paragraph>
-						Notice, to share the result to other users, the
-						content in text area and table will be uploaded
-						to server. Please
-						make
-						sure not include any private data in them.
+						We've detected there is a available parsing result for your input
+						file. Click
+						<b:Code>Confirm</b:Code>
+						button to replace current automatically parsed result.
 					</b:Paragraph>
 				</b:AlertBlock>
 			</b:Fieldset>

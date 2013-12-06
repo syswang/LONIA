@@ -8,12 +8,14 @@ import java.util.List;
 import com.github.gwtbootstrap.client.ui.AlertBlock;
 import com.github.gwtbootstrap.client.ui.Button;
 import com.github.gwtbootstrap.client.ui.CheckBox;
+import com.github.gwtbootstrap.client.ui.Code;
 import com.github.gwtbootstrap.client.ui.ControlGroup;
 import com.github.gwtbootstrap.client.ui.DataGrid;
 import com.github.gwtbootstrap.client.ui.FileUpload;
 import com.github.gwtbootstrap.client.ui.Form;
 import com.github.gwtbootstrap.client.ui.Form.SubmitEvent;
 import com.github.gwtbootstrap.client.ui.HelpInline;
+import com.github.gwtbootstrap.client.ui.Icon;
 import com.github.gwtbootstrap.client.ui.Modal;
 import com.github.gwtbootstrap.client.ui.NavLink;
 import com.github.gwtbootstrap.client.ui.Pagination;
@@ -25,6 +27,7 @@ import com.github.gwtbootstrap.client.ui.TextArea;
 import com.github.gwtbootstrap.client.ui.TextBox;
 import com.github.gwtbootstrap.client.ui.ValueListBox;
 import com.github.gwtbootstrap.client.ui.constants.AlertType;
+import com.github.gwtbootstrap.client.ui.constants.ButtonType;
 import com.github.gwtbootstrap.client.ui.constants.ControlGroupType;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -162,6 +165,14 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
   @UiField
   @Editor.Ignore
+  Button checkServerBtn;
+
+  @UiField
+  @Editor.Ignore
+  Code checkingServerText;
+
+  @UiField
+  @Editor.Ignore
   Paragraph previewText;
 
   @UiField
@@ -174,6 +185,10 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   @UiField
   @Editor.Ignore
   Button editRow;
+
+  @UiField
+  @Editor.Ignore
+  Icon checkingServer;
 
   @UiField
   @Editor.Ignore
@@ -258,6 +273,13 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     addRow.setEnabled(false);
     deleteRow.setEnabled(false);
     editRow.setEnabled(false);
+    checkServerBtn.setType(ButtonType.DEFAULT);
+    checkServerBtn.setEnabled(false);
+    checkServerBtn.setVisible(false);
+    checkingServer.setVisible(false);
+    checkingServerText.setVisible(false);
+    // String style = checkServerBtn.getElement().getAttribute("style");
+    // checkServerBtn.getElement().setAttribute("style", style + "; vertical-align:middle");
 
     prettyCode = new HTML();
     manSourceTab.add(prettyCode);
@@ -933,6 +955,13 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
     for (int i = 0; i < server_paras.size(); i++) {
       addParameter(server_paras.get(i));
     }
+    // checkServerBtn.setVisible(true);
+    // checkServerBtn.setEnabled(true);
+  }
+  
+  @UiHandler("cancelServerResult")
+  public void onCancelServerResultClick(ClickEvent e) {
+    serverResultModal.hide();
   }
 
   private String getCsv() {
@@ -998,18 +1027,29 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
   }
 
   private void checkServer() {
+    checkingServerText.setVisible(true);
+    checkingServer.setVisible(true);
+
     ParseResult pr = new ParseResult();
     pr.setKey(this.textArea.getText());
     pr.setValue(null);
     greetingService.sendToServer(pr, new AsyncCallback<ParseResult>() {
       public void onFailure(Throwable caught) {
-        Window.alert("Failed sending result to server");
+        Window.alert("Failed to check server");
+        checkingServerText.setVisible(false);
+        checkingServer.setVisible(false);
+        checkServerBtn.setVisible(false);
       }
 
       public void onSuccess(ParseResult pr) {
         if (pr.getValue() == null) {
-          Window.alert("No available results on server :(");
+          checkingServerText.setVisible(false);
+          checkingServer.setVisible(false);
+          checkServerBtn.setVisible(false);
+          // Window.alert("No available results on server :(");
         } else {
+          checkingServerText.setVisible(false);
+          checkingServer.setVisible(false);
           // Window.alert("Succeeded sending result to server: " + result.getValue());
           String[] lines = pr.getValue().split("\n");
           for (String line : lines) {
