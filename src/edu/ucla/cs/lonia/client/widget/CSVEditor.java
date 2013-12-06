@@ -37,10 +37,14 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.editor.client.Editor;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.editor.client.adapters.SimpleEditor;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DragStartEvent;
 import com.google.gwt.event.dom.client.DragStartHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates;
 import com.google.gwt.safehtml.client.SafeHtmlTemplates.Template;
@@ -269,7 +273,7 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
 
     initTable(csvDataGrid, dataGridPager, dataGridPagination);
 
-    parse.setEnabled(false);
+    //parse.setEnabled(false);
     addRow.setEnabled(false);
     deleteRow.setEnabled(false);
     editRow.setEnabled(false);
@@ -317,6 +321,16 @@ public class CSVEditor extends Composite implements Editor<Parameter> {
       }
 
     });
+//    textArea.addKeyDownHandler(new KeyDownHandler(){
+//
+//      @Override
+//      public void onKeyDown(KeyDownEvent event) {
+//        if (textArea.getSelectedText() != null && textArea.getSelectedText().length() > 0) {
+//          parse.setEnabled(true);
+//        }
+//      }
+//    });
+
   }
 
   public native void JsPrettyPrint() /*-{
