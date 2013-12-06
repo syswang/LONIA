@@ -2,9 +2,18 @@ package edu.ucla.cs.lonia.client.parser;
 
 import java.util.ArrayList;
 
+/**
+ * @author shaoyuwang
+ *
+ */
 public class ManuFileParser extends BasicParser {
   
-  public static IndexFromTo findPrefix(String str) {
+  /**
+   * Get the starting index and ending index of prefix in a string  
+   * @param str one line of a command in manual file
+   * @return the "from" and "to" index of class IndexFromTo
+   */
+  public static IndexFromTo findPrefix(String str) {   
     IndexFromTo idxft = new IndexFromTo();
     if (str.startsWith("[") || str.startsWith("|")) {
       idxft.setFrom(1);
@@ -20,6 +29,11 @@ public class ManuFileParser extends BasicParser {
     return idxft;
   }
 
+  /**
+   * Remove prefix sign and get the parameter name
+   * @param str one line of a command in manual file
+   * @return parameter name
+   */
   public static String getParameterName(String str) {
     if (str.startsWith("-")) {
       int n = 0;
@@ -31,6 +45,12 @@ public class ManuFileParser extends BasicParser {
       return str;
   }
 
+  
+  /**
+   * Get the starting and ending index of parameter of a string  
+   * @param str one line of a command in manual file
+   * @return the "from" and "to" index of class IndexFromTo
+   */
   public static IndexFromTo rangeParameter(String str) {
     IndexFromTo paraIdxFromTo = new IndexFromTo();
     int offset;
@@ -39,12 +59,6 @@ public class ManuFileParser extends BasicParser {
     else
       offset = 0;
 
-//    int n = 0;
-//    while(str.charAt(n) != ' ') {
-//      n++;
-//    }
-//    paraIdxFromTo.setFrom(n);
-    
     for (int i=0; i<str.length(); i++) {
       if(str.charAt(i) == ' ') {
         paraIdxFromTo.setFrom(i);
@@ -69,6 +83,14 @@ public class ManuFileParser extends BasicParser {
     return paraIdxFromTo;
   }
 
+  
+  /**
+   * Get the parameter type in the parameter substring of a command  
+   * @param str one line of a command in manual file
+   * @param startAt beginning index of a parameter substring
+   * @param endAt ending index of a parameter substring
+   * @return return a String parameter type
+   */
   public static String parameterType(String str, int startAt, int endAt) {
     if (endAt < 0 || startAt < 0 || startAt >= str.length() || endAt >= str.length()) {
 
@@ -81,6 +103,12 @@ public class ManuFileParser extends BasicParser {
       return "String";
   }
 
+  /**
+   * Check if the line of a command allows parameter or not   
+   * @param str one line of a command in manual file
+   * @param startAt beginning index of a parameter substring
+   * @return boolean result
+   */
   public static boolean withParameter(String str, int startAt) {
     if (str.charAt(startAt) == ']')
       return false;
@@ -89,7 +117,14 @@ public class ManuFileParser extends BasicParser {
     else
       return false;
   }
-
+ 
+  
+  /**
+   * Check if the parameter is optional or not
+   * @param str one line of a command in manual file
+   * @param startAt beginning index of a parameter substring
+   * @return boolean result
+   */
   public static boolean requireParameter(String str, int startAt) {
     str = str.trim();
     if (str.charAt(startAt) == '[')
@@ -98,6 +133,13 @@ public class ManuFileParser extends BasicParser {
       return true;
   }
 
+  
+  /**
+   * Count the number of parameter's parameter allowed (cardinality)
+   * @param str one line of a command in manual file
+   * @param startAt beginning index of a parameter substring
+   * @return number of cardinality
+   */
   public static int countCardinality(String str, int startAt) {
     int cardinality = 0;
     str = str.trim();
@@ -117,6 +159,14 @@ public class ManuFileParser extends BasicParser {
     return cardinality;
   }
 
+  
+  /**
+   * Get the description of a command
+   * @param str one line of a command in manual file
+   * @param startAt beginning index of a description substring 
+   * @param endAt ending index of a description substring
+   * @return return description string
+   */
   public static String getDes(String str, int startAt, int endAt) {
     String desStr = str.substring(startAt, endAt).trim();
     if (desStr.startsWith(":")) {
@@ -125,6 +175,9 @@ public class ManuFileParser extends BasicParser {
     return desStr;
   }
 
+  /**
+   * parse method inherited from the BasicParser abstract class  
+   */
   @Override
   public ArrayList<ResultRow> parse(String text) {
     int p = 0;
@@ -133,7 +186,7 @@ public class ManuFileParser extends BasicParser {
     while (p < lines.length) {
       String line = lines[p++];
       line = line.trim();
-      if (!(line.startsWith("[") || line.startsWith("-"))) {
+      if (!(line.startsWith("[") || line.startsWith("-"))) {   //find if the line is a valid command or not
         continue;
       }
 
