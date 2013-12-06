@@ -6,7 +6,7 @@ public class ManuFileParser extends BasicParser {
   
   public static IndexFromTo findPrefix(String str) {
     IndexFromTo idxft = new IndexFromTo();
-    if (str.startsWith("[")) {
+    if (str.startsWith("[") || str.startsWith("|")) {
       idxft.setFrom(1);
     } else
       idxft.setFrom(0);
@@ -21,9 +21,13 @@ public class ManuFileParser extends BasicParser {
   }
 
   public static String getParameterName(String str) {
-    if (str.startsWith("-"))
-      return str.substring(1);
-    else
+    if (str.startsWith("-")) {
+      int n = 0;
+      while (str.charAt(n) == '-') {
+        n++;
+      }
+      return str.substring(n);
+    } else
       return str;
   }
 
@@ -35,9 +39,15 @@ public class ManuFileParser extends BasicParser {
     else
       offset = 0;
 
-    for (int i = 0; i < str.length(); i++) {
-      if (str.charAt(i) == ' ') {
-        paraIdxFromTo.setFrom(i + 1);
+//    int n = 0;
+//    while(str.charAt(n) != ' ') {
+//      n++;
+//    }
+//    paraIdxFromTo.setFrom(n);
+    
+    for (int i=0; i<str.length(); i++) {
+      if(str.charAt(i) == ' ') {
+        paraIdxFromTo.setFrom(i);
         break;
       }
     }
@@ -48,10 +58,13 @@ public class ManuFileParser extends BasicParser {
       if (str.charAt(i) == ']' || str.charAt(i) == '>') {
         offset++;
         if (offset == 0) {
+          
           paraIdxFromTo.setTo(i);
+          
           break;
         }
       }
+      if (i == str.length()-1 ) paraIdxFromTo.setTo(str.length()-1);
     }
     return paraIdxFromTo;
   }
@@ -88,17 +101,28 @@ public class ManuFileParser extends BasicParser {
   public static int countCardinality(String str, int startAt) {
     int cardinality = 0;
     str = str.trim();
+    if (str.substring(startAt).contains("filename") || 
+        str.substring(startAt).contains("Filename"))
+      return 1; 
     for (int i = 0; i < str.length(); i++) {
       if (str.charAt(i) == ' ')
         cardinality++;
+      if (i==str.length()-1) {
+        return 0;
+      }
       if (str.charAt(i) == ']' || str.charAt(i) == '>')
         break;
+
     }
     return cardinality;
   }
 
   public static String getDes(String str, int startAt, int endAt) {
-    return str.substring(startAt, endAt).trim();
+    String desStr = str.substring(startAt, endAt).trim();
+    if (desStr.startsWith(":")) {
+      return desStr.substring(1).trim();
+  }
+    return desStr;
   }
 
   @Override
@@ -106,11 +130,10 @@ public class ManuFileParser extends BasicParser {
     int p = 0;
     String[] lines = text.split("\n");
     ArrayList<ResultRow> result = new ArrayList<ResultRow>();
-    String line = lines[p++];
     while (p < lines.length) {
+      String line = lines[p++];
       line = line.trim();
       if (!(line.startsWith("[") || line.startsWith("-"))) {
-        line = lines[p++];
         continue;
       }
 
@@ -135,7 +158,7 @@ public class ManuFileParser extends BasicParser {
           }
           paraIdx = rangeParameter(line);
           row.setType(parameterType(line, paraIdx.getFrom(), paraIdx.getTo())); // set Type
-          row.setCardinality(countCardinality(line, prefixIdx.getTo() + 1)); // set Cardinality
+          row.setCardinality(countCardinality(line, paraIdx.getFrom())); // set Cardinality
 
         } else {
           row.setCardinality(0);
@@ -144,11 +167,11 @@ public class ManuFileParser extends BasicParser {
           row.setRequire(false);
           paraIdx.setTo(prefixIdx.getTo());
         }
+
         row.setDescription(getDes(line, paraIdx.getTo() + 1, line.length())); // set Description
         result.add(row); // add to result
       } catch (Exception e) { e.printStackTrace(); }    //catch exception
       
-      line = lines[p++];
     }
     return result;
   }
